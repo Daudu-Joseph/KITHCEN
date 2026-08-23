@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap");
+
+header.scrolled .menus > ul > li::after {
+  background-color: var(--text-color-white);
+}
+
+#root {
+  min-height: 100%;
+}
+
+.brand-logo {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none !important;
+  line-height: 1;
+}
+
+.logo .brand-logo-light,
+.brand-logo-light {
+  color: #fff !important;
+}
+
+.logo .brand-logo-dark,
+.brand-logo-dark {
+  color: #11112b !important;
+}
+
+.brand-mark {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+}
+
+.brand-logo-text {
+  display: flex;
+  flex-direction: column;
+  font-family: "Archivo Black", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+  color: inherit;
+}
+
+.brand-logo-text span {
+  font-size: 1.15rem;
+}
+
+.brand-logo.is-compact .brand-mark {
+  width: 44px;
+  height: 44px;
+}
+
+.brand-logo.is-compact .brand-logo-text span {
+  font-size: 0.92rem;
+}
+
+.mobile-nav-logo .brand-logo {
+  color: inherit;
+}
+
+footer .brand-logo-text span {
+  font-size: 1.35rem;
+}
+
+footer .brand-mark {
+  width: 64px;
+  height: 64px;
+}
