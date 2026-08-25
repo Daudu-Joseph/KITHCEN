@@ -61,19 +61,10 @@ export default function ContactPage() {
                           </div>
                           <div className="ps-3">
                             <p className="mb-0">
-                              <b>Restaurent 1</b> <br />
-                              157 White Oak Drive Kansas City
-                            </p>
-                          </div>
-                        </div>
-                        <div className="contact-info-box d-flex align-items-center pe-2 py-3">
-                          <div className="contact-icon-box">
-                            <i className="fa-solid fa-location-dot border-bottom pb-2"></i>
-                          </div>
-                          <div className="ps-3">
-                            <p className="mb-0">
-                              <b>Restaurent 2</b> <br />
-                              158 White Oak Drive Kansas City
+                              <b>Restaurant</b> <br />
+                              66 Paul Street <br />
+                              London <br />
+                              EC2A 4NA
                             </p>
                           </div>
                         </div>
@@ -84,7 +75,7 @@ export default function ContactPage() {
                           <div className="ps-3">
                             <p className="mb-0">
                               <b>Phone Number</b> <br />
-                              (012) 978 645 312
+                              +44 7990 532631
                             </p>
                           </div>
                         </div>
@@ -111,7 +102,16 @@ export default function ContactPage() {
         <section className="map pb-0 pb-lg-5 ">
           <div className="container pb-5" data-aos="fade-right">
             <div className="row">
-              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7236.375239953878!2d67.08098637770993!3d24.92567760000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33f60a0781265%3A0x2befaba123014ab1!2sSMIT%20Gulshan%20Campus!5e0!3m2!1sen!2s!4v1724775738916!5m2!1sen!2s" width="100%" height="450" style={{ border: 0 }} allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+              <iframe
+                title="Chop Republic trading address map"
+                src="https://www.google.com/maps?q=66%20Paul%20Street%2C%20London%20EC2A%204NA&output=embed"
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
           </div>
         </section>

@@ -394,7 +394,7 @@ export default function AboutPage() {
                         <span></span>
                     </div>
                     <form action="" className="position-relative">
-                        <p className="text-center" data-aos="fade-up-right">We willing to help you make the reservation online to save your time and money or you can call us directly through the customer service hotline: 225-88888</p>
+                        <p className="text-center" data-aos="fade-up-right">We are happy to help with your reservation. You can call us directly through the customer service hotline: +44 7990 532631</p>
                         <div className="row mt-5">
                             <div className="col-md-6" data-aos="fade-right">
                                 <div className="input-group">

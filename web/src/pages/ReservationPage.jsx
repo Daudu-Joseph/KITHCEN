@@ -25,7 +25,7 @@ export default function ReservationPage() {
                         </div>
                         <form action="" className="position-relative">
                             <img data-aos="fade-down-left" className="d-none d-lg-block" src="/assets/images/reservation-showcase.png" alt="" />
-                            <p className="text-center" data-aos="fade-up-right">We willing to help you make the reservation online to save your time and money or you can call us directly through the customer service hotline: 225-88888</p>
+                            <p className="text-center" data-aos="fade-up-right">We are happy to help with your reservation. You can call us directly through the customer service hotline: +44 7990 532631</p>
                             <div className="row mt-5">
                                 <div data-aos="fade-right" className="col-md-6">
                                     <div className="input-group">
@@ -161,83 +161,6 @@ export default function ReservationPage() {
           </div>
         </section>
 
-
-        <section className="reservation-events my-5 py-5 ">
-          <div className="container mb-5">
-            <div className="row">
-              <h2 className="text-center display-6 fw-bold" data-aos="fade-right">Upcoming Events</h2>
-              <div data-aos="fade-right" className="reservation-line d-flex justify-content-center align-items-center">
-                  <span></span>
-              </div>
-            </div>
-            <div className="row">
-              <div data-aos="fade-right" className="col-lg-6 mb-5 pb-5 mb-lg-0 pb-lg-0">
-                <div className="event-card position-relative">
-                  <div className="event-heading d-flex py-2">
-                    <div className="event-date px-3 d-flex flex-column">
-                      <h5 className="event-day">12</h5>
-                      <h6 className="event-month">JUN</h6>
-                    </div>
-                    <div className="heading ps-3 d-flex align-items-center">
-                      <p className="mb-0">Hong Kong Tasty Food Cooking Event</p>
-                    </div>
-                  </div>
-                  <div className="image">
-                    <img className="img-fluid" src="/assets/images/event-01.jpg" alt="" />
-                  </div>
-                  <div className="event-info position-absolute">
-                    <ul className="d-flex justify-content-around ps-lg-0 position-relative my-3">
-                      <li className="list-unstyled">
-                        <span className="num">03</span>
-                        <span className="cap">/days</span>
-                      </li>
-                      <li className="list-unstyled">
-                        <span className="num">50</span>
-                        <span className="cap">/foods</span>
-                      </li>
-                      <li className="list-unstyled">
-                        <span className="num">290</span>
-                        <span className="cap">/guests</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div data-aos="fade-left" className="col-lg-6">
-                <div className="event-card position-relative">
-                  <div className="event-heading d-flex py-2">
-                    <div className="event-date px-3 d-flex flex-column">
-                      <h5 className="event-day">12</h5>
-                      <h6 className="event-month">JUN</h6>
-                    </div>
-                    <div className="heading ps-3 d-flex align-items-center">
-                      <p className="mb-0">Hong Kong Tasty Food Cooking Event</p>
-                    </div>
-                  </div>
-                  <div className="image">
-                    <img className="img-fluid" src="/assets/images/event-02.jpg" alt="" />
-                  </div>
-                  <div className="event-info position-absolute">
-                    <ul className="d-flex justify-content-around ps-lg-0 position-relative my-3">
-                      <li className="list-unstyled">
-                        <span className="num">03</span>
-                        <span className="cap">/days</span>
-                      </li>
-                      <li className="list-unstyled">
-                        <span className="num">50</span>
-                        <span className="cap">/foods</span>
-                      </li>
-                      <li className="list-unstyled">
-                        <span className="num">290</span>
-                        <span className="cap">/guests</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <section className="subscribe-us pb-5 mb-5">
           <img className="d-none d-lg-block" src="/assets/images/subscribe-us.png" alt="" data-aos="fade-down-right" />

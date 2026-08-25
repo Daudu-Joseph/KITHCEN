@@ -14,9 +14,10 @@ const NAV = [
 export default function Header() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
-  const onDarkBar = isHome || scrolled;
-  const { openSearch, openCart, mobileOpen, openMobile, closeMobile } = useUi();
+  const { cartItems, openSearch, openCart, mobileOpen, openMobile, closeMobile } = useUi();
   const [scrolled, setScrolled] = useState(false);
+  const onDarkBar = isHome || scrolled;
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -68,7 +69,7 @@ export default function Header() {
             <i className={`fa fa-search me-3 ${iconClass}`.trim()}></i>
           </a>
           <a
-            className="text-decoration-none"
+            className="cart-nav-link text-decoration-none"
             href="#cart"
             onClick={(e) => {
               e.preventDefault();
@@ -76,6 +77,7 @@ export default function Header() {
             }}
           >
             <i className={`fa fa-shopping-bag me-3 ${iconClass}`.trim()}></i>
+            {cartCount > 0 && <span className="cart-nav-count">{cartCount}</span>}
           </a>
         </div>
       </div>
@@ -110,7 +112,7 @@ export default function Header() {
               <i className={`fa fa-search me-3 ${iconClass}`.trim()}></i>
             </a>
             <a
-              className="text-decoration-none"
+              className="cart-nav-link text-decoration-none"
               href="#cart"
               onClick={(e) => {
                 e.preventDefault();
@@ -118,6 +120,7 @@ export default function Header() {
               }}
             >
               <i className={`fa fa-shopping-bag me-3 ${iconClass}`.trim()}></i>
+              {cartCount > 0 && <span className="cart-nav-count">{cartCount}</span>}
             </a>
           </div>
         </div>
