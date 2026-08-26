@@ -28,7 +28,7 @@ export default function Header() {
 
   useEffect(() => {
     closeMobile();
-  }, [pathname, closeMobile]);
+  }, [pathname]);
 
   const iconClass = onDarkBar ? "" : "text-dark";
   const linkClass = onDarkBar
@@ -83,17 +83,16 @@ export default function Header() {
       </div>
 
       <div className="mobile-header d-flex justify-content-around py-3 align-items-center d-lg-none">
-        <div
+        <button
+          className="mobile-menu-toggle"
           id="hamburger"
-          role="button"
-          tabIndex={0}
+          type="button"
+          aria-label="Open menu"
+          aria-expanded={mobileOpen}
           onClick={openMobile}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") openMobile();
-          }}
         >
           <i className={barsClass}></i>
-        </div>
+        </button>
         <div className="mobile-nav-logo">
           <div className="logo">
             <Logo variant={onDarkBar ? "light" : "dark"} compact />
@@ -124,37 +123,34 @@ export default function Header() {
             </a>
           </div>
         </div>
-        <div
-          className="mobile-menu-panel position-fixed w-75 bg-white h-100 top-0 start-0"
-          id="mobile-menu"
-          style={{ transform: mobileOpen ? "translateX(0%)" : "translateX(-100%)" }}
-        >
-          <div
-            id="hamburger-cross"
-            className="d-flex justify-content-end align-items-center py-2"
-            role="button"
-            tabIndex={0}
-            onClick={closeMobile}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") closeMobile();
-            }}
-          >
-            <i className="fa fa-2x fa-plus me-3 "></i>
-          </div>
-          <div className="menus">
-            <ul className="d-flex flex-column ps-2 mb-0 mt-4">
+        <div className={`mobile-menu-overlay ${mobileOpen ? "is-open" : ""}`} id="mobile-menu">
+          <div className="mobile-menu-backdrop" aria-hidden="true"></div>
+          <div className="mobile-menu-content">
+            <div className="mobile-menu-top">
+              <Logo variant="light" compact />
+              <button
+                className="mobile-menu-close"
+                id="hamburger-cross"
+                type="button"
+                aria-label="Close menu"
+                onClick={closeMobile}
+              >
+                <i className="fa fa-close"></i>
+              </button>
+            </div>
+            <nav className="mobile-overlay-nav" aria-label="Mobile navigation">
               {NAV.map((item) => (
-                <li className="list-unstyled py-2" key={item.to}>
-                  <Link
-                    className="text-dark text-decoration-none text-uppercase p-4"
-                    to={item.to}
-                    onClick={closeMobile}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
+                <Link key={item.to} to={item.to} onClick={closeMobile}>
+                  {item.label}
+                </Link>
               ))}
-            </ul>
+            </nav>
+            <div className="mobile-menu-contact">
+              <span>Get In Touch</span>
+              <a href="mailto:choprepublic@subtleinnovsvcs.org">
+                choprepublic@subtleinnovsvcs.org
+              </a>
+            </div>
           </div>
         </div>
       </div>

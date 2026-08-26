@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { menuCategories } from "./menuData";
 
 const menuPreviewCategories = [
@@ -90,7 +91,82 @@ const menuCategoryByName = new Map(
 const menuPreviewImage = (category) =>
   menuCategoryByName.get(category.name)?.items.find((item) => item.image)?.image ?? category.image;
 
+const testimonialSlides = [
+  {
+    quote:
+      "The food was absolutely amazing. Every bite tasted fresh, properly seasoned, and full of the Chop Republic flavour we wanted for our family order.",
+    name: "Olivia Brown",
+    role: "Customer",
+    image: "/assets/images/testi-1.jpg",
+  },
+  {
+    quote:
+      "Great service and even better food. The ordering was smooth, the portions were generous, and everything arrived with that proper home-cooked taste.",
+    name: "James Carter",
+    role: "Food Lover",
+    image: "/assets/images/testi-2.jpg",
+  },
+  {
+    quote:
+      "I ordered for a small event and everything was on point. The trays were packed well, delivery was clear, and guests kept asking where the food came from.",
+    name: "Daniel Smith",
+    role: "Event Organizer",
+    image: "/assets/images/testi-3.jpg",
+  },
+  {
+    quote:
+      "One of the best Nigerian food experiences I have had in London. Quality food, excellent service, and unforgettable taste from start to finish.",
+    name: "Amara Lewis",
+    role: "Customer",
+    image: "/assets/images/testi-4.jpg",
+  },
+];
+
+const testimonialAnimationMs = 680;
+
 export default function HomePage() {
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [testimonialDirection, setTestimonialDirection] = useState("next");
+  const [testimonialMotion, setTestimonialMotion] = useState(null);
+  const testimonialTimer = useRef(null);
+  const testimonial = testimonialSlides[activeTestimonial];
+  const previewTestimonial =
+    testimonialSlides[
+      testimonialDirection === "next"
+        ? (activeTestimonial + 1) % testimonialSlides.length
+        : (activeTestimonial - 1 + testimonialSlides.length) % testimonialSlides.length
+    ];
+
+  useEffect(
+    () => () => {
+      if (testimonialTimer.current) {
+        window.clearTimeout(testimonialTimer.current);
+      }
+    },
+    [],
+  );
+
+  const rotateTestimonial = (direction) => {
+    if (testimonialMotion) return;
+
+    const targetIndex =
+      direction === "next"
+        ? (activeTestimonial + 1) % testimonialSlides.length
+        : (activeTestimonial - 1 + testimonialSlides.length) % testimonialSlides.length;
+
+    setTestimonialDirection(direction);
+    setTestimonialMotion({ direction, targetIndex });
+
+    testimonialTimer.current = window.setTimeout(() => {
+      setActiveTestimonial(targetIndex);
+      setTestimonialMotion(null);
+    }, testimonialAnimationMs);
+  };
+
+  const showPreviousTestimonial = () => rotateTestimonial("prev");
+
+  const showNextTestimonial = () => rotateTestimonial("next");
+
   return (
     <main>
       <section className="banner py-5">
@@ -281,71 +357,85 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="testimonials py-5">
-        <div className="container py-5">
-          <div className="row" data-aos="fade-right">
-            <div className="section-title text-center">
-              <h5>Testimonial</h5>
-              <h2 className="display-5 fw-bold">Our Customer Says</h2>
+      <section className="testimonials fresh-testimonials">
+        <div className="container">
+          <div
+            className={`fresh-testimonial-layout fresh-testimonial-desktop ${
+              testimonialMotion ? `is-rotating is-rotating-${testimonialMotion.direction}` : ""
+            }`.trim()}
+            data-aos="fade-up"
+          >
+            <div className="fresh-testimonial-portrait" key={`portrait-${activeTestimonial}`}>
+              <img src={testimonial.image} alt={testimonial.name} />
+            </div>
+
+            <div className="fresh-testimonial-copy" key={`copy-${activeTestimonial}`}>
+              <p className="fresh-testimonial-kicker"><span></span> Testimonials</p>
+              <h2>What Our Customers Say</h2>
+              <div className="fresh-testimonial-quote-mark" aria-hidden="true">“</div>
+              <p className="fresh-testimonial-quote">“{testimonial.quote}”</p>
+              <div className="fresh-testimonial-author">
+                <strong>{testimonial.name}</strong>
+                <span>{testimonial.role}</span>
+              </div>
+            </div>
+
+            <div className="fresh-testimonial-side">
+              <div className="fresh-testimonial-controls">
+                <button
+                  type="button"
+                  aria-label="Previous testimonial"
+                  onClick={showPreviousTestimonial}
+                  onPointerDown={(event) => {
+                    if (event.pointerType !== "mouse") {
+                      event.preventDefault();
+                      showPreviousTestimonial();
+                    }
+                  }}
+                >
+                  <i className="fa fa-arrow-left"></i>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next testimonial"
+                  onClick={showNextTestimonial}
+                  onPointerDown={(event) => {
+                    if (event.pointerType !== "mouse") {
+                      event.preventDefault();
+                      showNextTestimonial();
+                    }
+                  }}
+                >
+                  <i className="fa fa-arrow-right"></i>
+                </button>
+              </div>
+              <div
+                className="fresh-testimonial-small-card"
+                key={`preview-${activeTestimonial}-${testimonialDirection}-${testimonialMotion ? "moving" : "still"}`}
+              >
+                <img src={previewTestimonial.image} alt={`${previewTestimonial.name} preview`} />
+              </div>
             </div>
           </div>
-          <div className="row">
-            <div className="testimonial-slider-wrapper" data-aos="fade-up">
-              <div className="slider-content pt-4 pb-4 mx-4">
-                <div>
-                  <div className="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
-                  </div>
-                  <div className="testi-info">
-                    <span className="name">Timothy Doe</span>
-                    <span className="position">Customer</span>
+
+          <div className="fresh-testimonial-mobile-stack">
+            {testimonialSlides.map((slide) => (
+              <article className="fresh-mobile-testimonial" key={slide.name}>
+                <div className="fresh-mobile-testimonial-image">
+                  <img src={slide.image} alt={slide.name} />
+                </div>
+                <div className="fresh-mobile-testimonial-copy">
+                  <p className="fresh-testimonial-kicker"><span></span> Testimonials</p>
+                  <h2>What Our Customers Say</h2>
+                  <div className="fresh-testimonial-quote-mark" aria-hidden="true">“</div>
+                  <p className="fresh-testimonial-quote">“{slide.quote}”</p>
+                  <div className="fresh-testimonial-author">
+                    <strong>{slide.name}</strong>
+                    <span>{slide.role}</span>
                   </div>
                 </div>
-                <div>
-                  <div className="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
-                  </div>
-                  <div className="testi-info">
-                    <span className="name">Sarah	Ruiz</span>
-                    <span className="position">Director</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
-                  </div>
-                  <div className="testi-info">
-                    <span className="name">Tracey Lewis</span>
-                    <span className="position">Designer</span>
-                  </div>
-                </div>
-                <div>
-                  <div className="testi-content">
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Architecto vel ipsa dolore sunt vitae, culpa, dolor reiciendis facilis sed blanditiis repellat incidunt impedit iusto? Odio veniam beatae veritatis adipisci a!</p>
-                  </div>
-                  <div className="testi-info">
-                    <span className="name">Jamie	Erickson</span>
-                    <span className="position">Manager</span>
-                  </div>
-                </div>
-              </div>
-              <div className="slider-nav-wrapper mx-5">
-                <div className="slider-nav">
-                  <div className="slider-nav-img active">
-                    <img src="/assets/images/testi-1.jpg" alt="" />
-                  </div>
-                  <div className="slider-nav-img">
-                    <img src="/assets/images/testi-2.jpg" alt="" />
-                  </div>
-                  <div className="slider-nav-img">
-                    <img src="/assets/images/testi-3.jpg" alt="" />
-                  </div>
-                  <div className="slider-nav-img">
-                    <img src="/assets/images/testi-4.jpg" alt="" />
-                  </div>
-                </div>
-              </div>
-            </div>
+              </article>
+            ))}
           </div>
         </div>
       </section>

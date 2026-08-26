@@ -70,11 +70,12 @@ export default function Cart() {
               <div className="shopping-cart-item-side">
                 <p>{formatPrice(parsePrice(item.price) * item.quantity)}</p>
                 <button
+                  className="shopping-cart-remove"
                   type="button"
                   aria-label={`Remove ${item.name}`}
                   onClick={() => removeFromCart(item.slug)}
                 >
-                  <i className="fa fa-trash-o"></i>
+                  <i className="fa fa-trash"></i>
                 </button>
               </div>
             </div>
