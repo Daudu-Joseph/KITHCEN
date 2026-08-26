@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import HomeSpecialOffers from "../components/HomeSpecialOffers";
 import { menuCategories } from "./menuData";
 
 const menuPreviewCategories = [
@@ -283,6 +284,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <HomeSpecialOffers />
 
       <section className="services home-menu-services py-4">
         <div className="container">
