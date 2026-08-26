@@ -86,8 +86,9 @@ export default function ContactPage() {
                           <div className="ps-3">
                             <p className="mb-0">
                               <b>Mail</b> <br />
-                              hello@fooday.com <br />
-                              contact@fooday.com
+                              <a href="mailto:choprepublic@subtleinnovsvcs.org">
+                                choprepublic@subtleinnovsvcs.org
+                              </a>
                             </p>
                           </div>
                         </div>

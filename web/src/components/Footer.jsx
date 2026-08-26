@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
 
+const assortedStewImage = new URL("../../pic/asorted stew.png", import.meta.url).href;
+
 const footerColumns = [
   {
     title: "Menu",
@@ -14,7 +16,6 @@ const footerColumns = [
     title: "Company",
     links: [
       { label: "About", to: "/about" },
-      { label: "Gallery", to: "/" },
       { label: "Catering", to: "/contact" },
     ],
   },
@@ -23,14 +24,13 @@ const footerColumns = [
     links: [
       { label: "FAQ", to: "/contact" },
       { label: "Contact", to: "/contact" },
-      { label: "Order Help", to: "/menu" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { label: "Privacy Policy", to: "/contact" },
-      { label: "Terms of Service", to: "/contact" },
+      { label: "Privacy Policy", to: "/privacy-policy" },
+      { label: "Terms of Service", to: "/terms" },
     ],
   },
 ];
@@ -43,7 +43,7 @@ export default function Footer() {
       <section className="footer-cta">
         <img
           className="footer-cta-food footer-cta-food-left"
-          src="/assets/images/menu-slider-dinner.png"
+          src={assortedStewImage}
           alt=""
         />
         <img
@@ -81,6 +81,10 @@ export default function Footer() {
                 <a href="tel:+447990532631">
                   <i className="fa fa-phone" aria-hidden="true"></i>
                   +44 7990 532631
+                </a>
+                <a href="mailto:choprepublic@subtleinnovsvcs.org">
+                  <i className="fa fa-envelope" aria-hidden="true"></i>
+                  choprepublic@subtleinnovsvcs.org
                 </a>
               </div>
             </div>

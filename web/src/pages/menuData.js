@@ -27,6 +27,7 @@ const foodImages = {
   "freid fish.png": new URL("../../pic/freid fish.png", import.meta.url).href,
   "freid rice.png": new URL("../../pic/freid rice.png", import.meta.url).href,
   "fufu.png": new URL("../../pic/fufu.png", import.meta.url).href,
+  "gbegiri.png": new URL("../../pic/gbegiri.png", import.meta.url).href,
   "gizzad stick.png": new URL("../../pic/gizzad stick.png", import.meta.url).href,
   "goat meat pper soup.png": new URL("../../pic/goat meat pper soup.png", import.meta.url).href,
   "hard chicken.png": new URL("../../pic/hard chicken.png", import.meta.url).href,
@@ -45,6 +46,7 @@ const foodImages = {
   "red beam.png": new URL("../../pic/red beam.png", import.meta.url).href,
   "rice and beans.png": new URL("../../pic/rice and beans.png", import.meta.url).href,
   "sauaseg rool.png": new URL("../../pic/sauaseg rool.png", import.meta.url).href,
+  "suya.png": new URL("../../pic/suya.png", import.meta.url).href,
   "tilapia.png": new URL("../../pic/tilapia.png", import.meta.url).href,
   "togolese.png": new URL("../../pic/togolese.png", import.meta.url).href,
   "turkey.png": new URL("../../pic/turkey.png", import.meta.url).href,
@@ -60,7 +62,7 @@ export const menuCategories = [
     image: "/assets/images/product-2a.jpg",
     items: [
       { name: "Gizzard Stick", price: "£1.70 per stick", description: "Seasoned gizzard skewers with pepper heat.", image: foodImage("gizzad stick.png") },
-      { name: "Suya (Small Takeaway)", price: "£15", description: "Smoky suya spice, sliced and ready to share." },
+      { name: "Suya (Small Takeaway)", price: "£15", description: "Smoky suya spice, sliced and ready to share.", image: foodImage("suya.png") },
       { name: "Stick Meat", price: "£1.70 per stick", description: "Grilled meat skewers with Chop Republic seasoning.", image: foodImage("meat stick.png") },
       { name: "Dodo & Gizzard", price: "£180 per tray", description: "Sweet plantain tossed with rich peppered gizzard.", image: foodImage("dod and gizzard.png") },
     ],
@@ -102,7 +104,7 @@ export const menuCategories = [
     name: "Soups",
     image: "/assets/images/bg1_0.jpg",
     items: [
-      { name: "Gbegiri", price: "£20 per litre", description: "Smooth bean soup with classic Yoruba flavour." },
+      { name: "Gbegiri", price: "£20 per litre", description: "Smooth bean soup with classic Yoruba flavour.", image: foodImage("gbegiri.png") },
       { name: "Bitter Leaf Soup", price: "£90 per 5 litres", description: "Deep, savoury soup with bitter leaf richness.", image: foodImage("bitter leaf.png") },
       { name: "Edikang Ikong", price: "£90 per 5 litres", description: "Leafy, hearty soup packed with flavour.", image: foodImage("edikang ikong.png") },
       { name: "Egusi", price: "£80 per 5 litres", description: "Melon seed soup with a rich savoury base.", image: foodImage("egusi.png") },
@@ -117,7 +119,7 @@ export const menuCategories = [
     name: "Rice Dishes",
     image: "/assets/images/hero-jollof-chicken-transparent.png",
     items: [
-      { name: "Jollof Rice", price: "£100 per cooler", description: "Smoky party-style rice with tomato pepper depth." },
+      { name: "Jollof Rice", price: "£100 per cooler", description: "Smoky party-style rice with tomato pepper depth.", image: "/assets/images/hero-jollof-chicken-transparent.png" },
       { name: "Fried Rice", price: "£150 per cooler", description: "Colourful savoury rice with vegetables and seasoning.", image: foodImage("freid rice.png") },
       { name: "White Rice", price: "£50 per cooler", description: "Simple, fluffy white rice ready for sauce.", image: foodImage("whte rice.png") },
       { name: "Rice & Beans", price: "£120 per cooler", description: "A hearty classic ready for stew and protein.", image: foodImage("rice and beans.png") },

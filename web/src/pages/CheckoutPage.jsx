@@ -321,8 +321,9 @@ export default function CheckoutPage() {
                 ) : null}
 
                 <p className="checkout-terms">
-                  By proceeding with your purchase you agree to our Terms and Conditions and Privacy
-                  Policy
+                  By proceeding with your purchase you agree to our{" "}
+                  <Link to="/terms">Terms and Conditions</Link> and{" "}
+                  <Link to="/privacy-policy">Privacy Policy</Link>
                 </p>
 
                 <div className="checkout-actions">

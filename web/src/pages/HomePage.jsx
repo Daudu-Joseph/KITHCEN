@@ -1,3 +1,5 @@
+import { menuCategories } from "./menuData";
+
 const menuPreviewCategories = [
   {
     name: "Starters",
@@ -81,6 +83,13 @@ const menuPreviewCategories = [
   },
 ];
 
+const menuCategoryByName = new Map(
+  menuCategories.map((category) => [category.name, category])
+);
+
+const menuPreviewImage = (category) =>
+  menuCategoryByName.get(category.name)?.items.find((item) => item.image)?.image ?? category.image;
+
 export default function HomePage() {
   return (
     <main>
@@ -115,9 +124,9 @@ export default function HomePage() {
               <div className="col-lg-6 about-content" data-aos="fade-left">
                   <p className="about-kicker mb-3"><span></span>About Us</p>
                   <h2 className="mb-4 dis">
-                    Exceptional Experience With Premium Quality,
+                    Exceptional Experience With
                     <br />
-                    Rich Flavors
+                    Premium Quality, Rich Flavors
                   </h2>
                   <p className="about-copy mb-4">
                     We bring together premium ingredients, expert craftmanship, and a passion for flavor, creating unforgettable dining experiences in every bite with rich taste and quality.
@@ -168,7 +177,7 @@ export default function HomePage() {
                 <div className="row my-5 py-3 align-items-center">
                   <div className="col-lg-5">
                     <div className="menu-preview-image pb-5 pb-lg-0">
-                      <img src={category.image} alt={`${category.name} preview`} />
+                      <img src={menuPreviewImage(category)} alt={`${category.name} preview`} />
                     </div>
                   </div>
                   <div className="col-lg-7">

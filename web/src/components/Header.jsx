@@ -82,7 +82,7 @@ export default function Header() {
         </div>
       </div>
 
-      <div className="d-flex justify-content-around py-3 align-items-center d-lg-none">
+      <div className="mobile-header d-flex justify-content-around py-3 align-items-center d-lg-none">
         <div
           id="hamburger"
           role="button"
@@ -125,7 +125,7 @@ export default function Header() {
           </div>
         </div>
         <div
-          className="position-fixed w-75 bg-white h-100 top-0 start-0"
+          className="mobile-menu-panel position-fixed w-75 bg-white h-100 top-0 start-0"
           id="mobile-menu"
           style={{ transform: mobileOpen ? "translateX(0%)" : "translateX(-100%)" }}
         >
