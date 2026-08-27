@@ -25,7 +25,7 @@ const foodImages = {
   "fish pepeer soup.png": new URL("../../pic/fish pepeer soup.png", import.meta.url).href,
   "fish pie.png": new URL("../../pic/fish pie.png", import.meta.url).href,
   "freid fish.png": new URL("../../pic/freid fish.png", import.meta.url).href,
-  "freid rice.png": new URL("../../pic/freid rice.png", import.meta.url).href,
+  "freid rice-clean.png": new URL("../../pic/freid rice-clean.png", import.meta.url).href,
   "fufu.png": new URL("../../pic/fufu.png", import.meta.url).href,
   "gbegiri.png": new URL("../../pic/gbegiri.png", import.meta.url).href,
   "gizzad stick.png": new URL("../../pic/gizzad stick.png", import.meta.url).href,
@@ -56,7 +56,160 @@ const foodImages = {
 
 const foodImage = (filename) => foodImages[filename];
 
-export const menuCategories = [
+const formatPrice = (value) =>
+  `£${value.toLocaleString(undefined, {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+
+const sizeOption = (label, value) => ({
+  label,
+  value,
+  price: formatPrice(value),
+});
+
+const eachOption = (value) => sizeOption("Each", value);
+const takeawayOption = (value) => sizeOption("Takeaway", value);
+const packOption = (value) => sizeOption("Pack", value);
+const coolerOptions = (quarter, half, full) => [
+  sizeOption("Quarter cooler / 6 litres", quarter),
+  sizeOption("Half cooler / 12 litres", half),
+  sizeOption("Full cooler / 24 litres", full),
+];
+const takeawayCoolerOptions = (takeaway, quarter, half, full) => [
+  takeawayOption(takeaway),
+  ...coolerOptions(quarter, half, full),
+];
+
+const itemSizeOptions = {
+  "Gizzard Stick": [takeawayOption(2.3)],
+  "Suya (Small Takeaway)": [takeawayOption(8.2)],
+  "Stick Meat": [takeawayOption(2.3)],
+  "Dodo & Gizzard": takeawayCoolerOptions(7.7, 45, 90, 180),
+  "Pounded Yam": [eachOption(2)],
+  Eba: [eachOption(2)],
+  Amala: [eachOption(2)],
+  Fufu: [eachOption(2)],
+  Plantain: [takeawayOption(2)],
+  "Moi Moi (Leaf)": [eachOption(2.7)],
+  "Moi Moi (Plastic)": [eachOption(1.7)],
+  Turkey: coolerOptions(62.5, 125, 250),
+  "Assorted Stew": takeawayCoolerOptions(7.5, 90, 180, 360),
+  Beef: takeawayCoolerOptions(2.5, 100, 200, 400),
+  "Hard Chicken": takeawayCoolerOptions(2.8, 75, 150, 300),
+  "Drumstick Chicken": takeawayCoolerOptions(1.6, 62.5, 125, 250),
+  "Fried Fish": takeawayCoolerOptions(2.2, 37.5, 75, 150),
+  "Mackerel Fish": takeawayCoolerOptions(2.2, 37.5, 75, 150),
+  Ponmo: takeawayCoolerOptions(2, 25, 50, 100),
+  Gbegiri: takeawayCoolerOptions(3, 20, 40, 80),
+  "Bitter Leaf Soup": takeawayCoolerOptions(7, 90, 180, 360),
+  "Edikang Ikong": takeawayCoolerOptions(7, 90, 180, 360),
+  Egusi: takeawayCoolerOptions(6, 80, 160, 320),
+  "Mixed Okra Soup": takeawayCoolerOptions(7.8, 90, 180, 360),
+  "Ogbono Soup": takeawayCoolerOptions(7, 80, 160, 320),
+  "Oha Soup": takeawayCoolerOptions(8, 80, 160, 320),
+  "Efo Riro": takeawayCoolerOptions(6, 75, 150, 300),
+  Ewedu: takeawayCoolerOptions(3, 20, 40, 80),
+  "Jollof Rice": takeawayCoolerOptions(6.5, 25, 50, 100),
+  "Fried Rice": takeawayCoolerOptions(7, 37.5, 75, 150),
+  "White Rice": takeawayCoolerOptions(3, 12.5, 25, 50),
+  "Rice & Beans": takeawayCoolerOptions(6.5, 30, 60, 120),
+  Ayamase: takeawayCoolerOptions(11, 70, 140, 280),
+  "Yam Porridge": takeawayCoolerOptions(7, 37.5, 75, 150),
+  "Goat Meat Assorted Pepper Soup": takeawayCoolerOptions(11, 70, 140, 280),
+  "Ewa Riro & Sauce": takeawayCoolerOptions(7.2, 80, 160, 320),
+  "Togolese Beans & Sauce": coolerOptions(80, 160, 320),
+  "Red Bream Fish": takeawayCoolerOptions(6, 45, 90, 180),
+  "Grilled Tilapia": [eachOption(14.6)],
+  "Catfish Pepper Soup": takeawayCoolerOptions(11, 70, 140, 280),
+  "Puff Puff": takeawayCoolerOptions(1.7, 20, 40, 80),
+  "Chicken Pie": [eachOption(2.5)],
+  "Meat Pie": [eachOption(2.5)],
+  "Fish Pie": [eachOption(2)],
+  "Fish Roll": [eachOption(2)],
+  "Sausage Roll": [eachOption(3)],
+  "Chin Chin": [packOption(2)],
+};
+
+const itemAllergens = {
+  "Gizzard Stick": ["Gluten", "Milk", "Mustard", "Soya"],
+  "Suya (Small Takeaway)": ["Milk", "Nuts", "Peanuts", "Soya"],
+  "Stick Meat": ["Crustaceans", "Milk", "Soya"],
+  "Dodo & Gizzard": ["Milk", "Mustard", "Soya"],
+  "Pounded Yam": [],
+  Eba: [],
+  Amala: [],
+  Fufu: [],
+  Plantain: ["Gluten", "Soya"],
+  "Moi Moi (Leaf)": ["Fish", "Eggs", "Milk", "Soya"],
+  "Moi Moi (Plastic)": ["Fish", "Eggs", "Milk", "Soya"],
+  Turkey: ["Milk", "Mustard", "Soya"],
+  "Assorted Stew": ["Milk", "Soya"],
+  Beef: ["Milk", "Mustard", "Soya"],
+  "Hard Chicken": ["Celery", "Gluten", "Milk", "Mustard", "Soya"],
+  "Drumstick Chicken": ["Celery", "Gluten", "Milk", "Mustard", "Soya", "Sulphites"],
+  "Fried Fish": ["Gluten", "Crustaceans", "Fish", "Milk", "Mustard", "Soya"],
+  "Mackerel Fish": ["Gluten", "Crustaceans", "Fish", "Milk", "Mustard", "Soya"],
+  Ponmo: ["Milk", "Soya"],
+  Gbegiri: ["Crustaceans", "Soya"],
+  "Bitter Leaf Soup": ["Crustaceans", "Fish", "Milk", "Soya"],
+  "Edikang Ikong": ["Crustaceans", "Fish", "Milk", "Soya"],
+  Egusi: ["Gluten", "Crustaceans", "Fish", "Soya"],
+  "Mixed Okra Soup": ["Crustaceans", "Fish", "Soya"],
+  "Ogbono Soup": ["Crustaceans", "Fish", "Soya"],
+  "Oha Soup": ["Crustaceans", "Fish", "Soya"],
+  "Efo Riro": ["Crustaceans", "Fish", "Soya"],
+  Ewedu: ["Crustaceans", "Fish", "Soya"],
+  "Jollof Rice": ["Milk", "Mustard", "Soya"],
+  "Fried Rice": ["Crustaceans", "Milk", "Mustard", "Soya"],
+  "White Rice": [],
+  "Rice & Beans": ["Milk", "Mustard", "Soya"],
+  Ayamase: ["Milk", "Soya"],
+  "Yam Porridge": ["Crustaceans", "Milk", "Soya"],
+  "Goat Meat Assorted Pepper Soup": ["Crustaceans", "Milk", "Mustard", "Soya"],
+  "Ewa Riro & Sauce": ["Gluten", "Crustaceans", "Fish", "Milk", "Soya"],
+  "Togolese Beans & Sauce": ["Milk", "Soya"],
+  "Red Bream Fish": ["Crustaceans", "Fish", "Milk", "Soya"],
+  "Grilled Tilapia": ["Crustaceans", "Fish", "Milk", "Mustard", "Soya"],
+  "Catfish Pepper Soup": ["Crustaceans", "Milk", "Mustard", "Soya"],
+  "Puff Puff": ["Gluten", "Soya"],
+  "Chicken Pie": ["Celery", "Gluten", "Eggs", "Milk", "Mustard", "Soya"],
+  "Meat Pie": ["Celery", "Gluten", "Eggs", "Milk", "Mustard", "Soya"],
+  "Fish Pie": ["Gluten", "Fish", "Eggs", "Milk", "Soya"],
+  "Fish Roll": ["Gluten", "Fish", "Eggs", "Milk", "Soya"],
+  "Sausage Roll": ["Gluten", "Eggs", "Milk", "Mustard", "Soya"],
+  "Chin Chin": ["Gluten", "Eggs", "Milk"],
+};
+
+const displayPrice = (sizes) => {
+  if (sizes.length === 1) {
+    const [{ label, price }] = sizes;
+    if (label === "Each") return `${price} each`;
+    if (label === "Pack") return `${price} per pack`;
+    return price;
+  }
+
+  return `From ${sizes[0].price}`;
+};
+
+const withSizeOptions = (item) => {
+  const sizes = itemSizeOptions[item.name];
+
+  const allergens = itemAllergens[item.name];
+
+  return {
+    ...item,
+    ...(allergens ? { allergens } : {}),
+    ...(sizes
+      ? {
+          price: displayPrice(sizes),
+          sizes,
+        }
+      : {}),
+  };
+};
+
+const rawMenuCategories = [
   {
     name: "Starters",
     image: "/assets/images/product-2a.jpg",
@@ -120,7 +273,7 @@ export const menuCategories = [
     image: "/assets/images/hero-jollof-chicken-transparent.png",
     items: [
       { name: "Jollof Rice", price: "£100 per cooler", description: "Smoky party-style rice with tomato pepper depth.", image: "/assets/images/hero-jollof-chicken-transparent.png" },
-      { name: "Fried Rice", price: "£150 per cooler", description: "Colourful savoury rice with vegetables and seasoning.", image: foodImage("freid rice.png") },
+      { name: "Fried Rice", price: "£150 per cooler", description: "Colourful savoury rice with vegetables and seasoning.", image: foodImage("freid rice-clean.png") },
       { name: "White Rice", price: "£50 per cooler", description: "Simple, fluffy white rice ready for sauce.", image: foodImage("whte rice.png") },
       { name: "Rice & Beans", price: "£120 per cooler", description: "A hearty classic ready for stew and protein.", image: foodImage("rice and beans.png") },
     ],
@@ -153,3 +306,8 @@ export const menuCategories = [
     ],
   },
 ];
+
+export const menuCategories = rawMenuCategories.map((category) => ({
+  ...category,
+  items: category.items.map(withSizeOptions),
+}));

@@ -1,6 +1,6 @@
-import { HouseIcon } from "@phosphor-icons/react";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { HouseIcon, WarningIcon, XIcon } from "@phosphor-icons/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ReceiptPrinter } from "../components/ReceiptPrinter";
 import { TactileButton } from "../components/TactileButton";
 import { useUi } from "../context/UiContext";
@@ -33,6 +33,8 @@ const formatOrderDate = (date) =>
   }).format(new Date(date));
 
 const savedOrderKey = "chopRepublicLastOrder";
+const pendingStripeOrderKey = "chopRepublicPendingStripeOrder";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4242";
 
 const getSavedOrder = () => {
   try {
@@ -43,11 +45,54 @@ const getSavedOrder = () => {
   }
 };
 
+const getReturnedStripeOrder = () => {
+  try {
+    const payment = new URLSearchParams(window.location.search).get("payment");
+    if (payment !== "stripe-success") return null;
+
+    const pendingOrder = window.localStorage.getItem(pendingStripeOrderKey);
+    return pendingOrder ? JSON.parse(pendingOrder) : null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitialReceipt = (hasActiveCart) => {
+  const returnedStripeOrder = getReturnedStripeOrder();
+  if (returnedStripeOrder) {
+    return {
+      order: { ...returnedStripeOrder, paymentMethod: "stripe" },
+      stage: "processing",
+    };
+  }
+
+  const savedOrder = hasActiveCart ? null : getSavedOrder();
+  return {
+    order: savedOrder,
+    stage: savedOrder ? "complete" : "processing",
+  };
+};
+
 export default function CheckoutPage() {
   const { cartItems, clearCart, openCart } = useUi();
+  const navigate = useNavigate();
+  const isLeavingCheckoutRef = useRef(false);
+  const [searchParams] = useSearchParams();
+  const initialReceipt = getInitialReceipt(cartItems.length > 0);
   const [form, setForm] = useState(initialForm);
-  const [order, setOrder] = useState(() => getSavedOrder());
-  const [receiptStage, setReceiptStage] = useState(() => (getSavedOrder() ? "complete" : "processing"));
+  const [order, setOrder] = useState(() => initialReceipt.order);
+  const [receiptStage, setReceiptStage] = useState(() => initialReceipt.stage);
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [checkoutAlert, setCheckoutAlert] = useState(() =>
+    searchParams.get("payment") === "stripe-cancelled"
+      ? {
+          message: "Payment was cancelled.",
+          tone: "warning",
+        }
+      : null,
+  );
+  const [stripeError, setStripeError] = useState("");
+  const [stripeLoading, setStripeLoading] = useState(false);
 
   const subtotal = useMemo(
     () => cartItems.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0),
@@ -64,6 +109,7 @@ export default function CheckoutPage() {
   ];
   const canPlaceOrder =
     cartItems.length > 0 && requiredFields.every((field) => String(form[field]).trim().length > 0);
+  const canSubmitOrder = canPlaceOrder && Boolean(paymentMethod);
 
   const updateField = (event) => {
     const { name, type, checked, value } = event.target;
@@ -73,16 +119,19 @@ export default function CheckoutPage() {
     }));
   };
 
+  const buildOrderSnapshot = (method = paymentMethod) => ({
+    customer: { ...form },
+    date: new Date().toISOString(),
+    items: cartItems.map((item) => ({ ...item })),
+    orderNumber: getOrderNumber(),
+    paymentMethod: method,
+    total: subtotal,
+  });
+
   const placeOrder = (event) => {
     event.preventDefault();
-    if (!canPlaceOrder) return;
-    const placedOrder = {
-      customer: { ...form },
-      date: new Date().toISOString(),
-      items: cartItems.map((item) => ({ ...item })),
-      orderNumber: getOrderNumber(),
-      total: subtotal,
-    };
+    if (!canSubmitOrder) return;
+    const placedOrder = buildOrderSnapshot("whatsapp");
 
     setOrder(placedOrder);
     window.localStorage.setItem(savedOrderKey, JSON.stringify(placedOrder));
@@ -90,25 +139,105 @@ export default function CheckoutPage() {
     clearCart();
   };
 
-  const downloadReceipt = () => {
-    window.print();
+  const submitSelectedPayment = (event) => {
+    event.preventDefault();
+    if (!canSubmitOrder) return;
+
+    if (paymentMethod === "stripe") {
+      startStripeCheckout();
+      return;
+    }
+
+    placeOrder(event);
   };
 
-  const clearSavedOrder = () => {
-    window.localStorage.removeItem(savedOrderKey);
+  const startStripeCheckout = async () => {
+    if (!canSubmitOrder || stripeLoading) return;
+
+    const pendingOrder = buildOrderSnapshot("stripe");
+    setStripeError("");
+    setStripeLoading(true);
+    window.localStorage.setItem(pendingStripeOrderKey, JSON.stringify(pendingOrder));
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer: form,
+          items: cartItems.map(({ name, price, quantity, selectedSize }) => ({
+            name,
+            price,
+            quantity,
+            selectedSize,
+          })),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.url) {
+        console.error("Stripe checkout server error:", data.error);
+        throw new Error("Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout.");
+      }
+
+      window.location.assign(data.url);
+    } catch (error) {
+      window.localStorage.removeItem(pendingStripeOrderKey);
+      console.error("Stripe checkout could not start:", error);
+      setStripeError(
+        error instanceof TypeError
+          ? "Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout."
+          : error.message ?? "Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout.",
+      );
+      setStripeLoading(false);
+    }
+  };
+
+  const downloadReceipt = () => {
+    window.print();
   };
 
   useEffect(() => {
     if (!order) return undefined;
 
-    const printingTimer = window.setTimeout(() => setReceiptStage("printing"), 650);
-    const completeTimer = window.setTimeout(() => setReceiptStage("complete"), 2600);
+    if (receiptStage === "complete") return undefined;
+
+    const printingTimer =
+      receiptStage === "processing"
+        ? window.setTimeout(() => setReceiptStage("printing"), 650)
+        : undefined;
+    const completeTimer = window.setTimeout(
+      () => setReceiptStage("complete"),
+      receiptStage === "printing" ? 1850 : 2600,
+    );
 
     return () => {
-      window.clearTimeout(printingTimer);
+      if (printingTimer) window.clearTimeout(printingTimer);
       window.clearTimeout(completeTimer);
     };
-  }, [order]);
+  }, [order, receiptStage]);
+
+  useEffect(() => {
+    if (isLeavingCheckoutRef.current || searchParams.get("payment") !== "stripe-success" || !order) return;
+
+    try {
+      const paidOrder = { ...order, paymentMethod: "stripe" };
+      window.localStorage.setItem(savedOrderKey, JSON.stringify(paidOrder));
+      window.localStorage.removeItem(pendingStripeOrderKey);
+      navigate("/checkout", { replace: true });
+      clearCart();
+    } catch {
+      window.localStorage.removeItem(pendingStripeOrderKey);
+    }
+  }, [clearCart, navigate, order, searchParams]);
+
+  useEffect(() => {
+    if (searchParams.get("payment") !== "stripe-cancelled") return;
+
+    navigate("/checkout", { replace: true });
+  }, [navigate, searchParams]);
 
   const orderCustomerName = order
     ? `${order.customer.firstName} ${order.customer.lastName}`.trim()
@@ -118,12 +247,46 @@ export default function CheckoutPage() {
     : 0;
   const receiptScreenTitle =
     order && order.items.length === 1 ? order.items[0].name : "Chop Republic order";
-  const receiptScreenSubtitle = `${orderItemCount} ${
-    orderItemCount === 1 ? "item" : "items"
-  } ready for payment`;
+  const receiptScreenSubtitle = `${orderItemCount} ${orderItemCount === 1 ? "item" : "items"} ${
+    order?.paymentMethod === "stripe" ? "payment confirmed" : "ready for payment"
+  }`;
+  const orderStatusTitle = order?.paymentMethod === "stripe" ? "Payment confirmed" : "Order placed";
+  const orderStatusMessage =
+    order?.paymentMethod === "stripe"
+      ? "Your payment was successful. We'll contact you to validate your order."
+      : "We'll contact you to validate your order and confirm payment.";
+  const checkoutNotice = stripeError
+    ? {
+        title: "Online payment unavailable",
+        message: stripeError,
+        tone: "error",
+      }
+    : null;
+  const whatsappNotice =
+    paymentMethod === "whatsapp"
+      ? {
+          title: "WhatsApp number required",
+          message:
+            "Ensure you add a valid WhatsApp number so we can contact you to validate the order and payment.",
+          tone: "info",
+        }
+      : null;
 
   return (
     <main className="checkout-page">
+      {checkoutAlert ? (
+        <div className={`checkout-alert checkout-alert-${checkoutAlert.tone}`} role="alert">
+          <WarningIcon aria-hidden="true" size={22} />
+          <span>{checkoutAlert.message}</span>
+          <button
+            aria-label="Dismiss alert"
+            onClick={() => setCheckoutAlert(null)}
+            type="button"
+          >
+            <XIcon aria-hidden="true" size={20} />
+          </button>
+        </div>
+      ) : null}
       <section className="checkout-section">
         <div className="container">
           {order ? (
@@ -168,9 +331,10 @@ export default function CheckoutPage() {
                         const itemPrice = parsePrice(item.price);
 
                         return (
-                          <div className="printed-receipt-item" key={item.slug}>
+                          <div className="printed-receipt-item" key={item.cartKey ?? item.slug}>
                             <div>
                               <strong>{item.name}</strong>
+                              {item.selectedSize ? <em>{item.selectedSize}</em> : null}
                               <span>
                                 Qty {item.quantity} x {formatPrice(itemPrice)}
                               </span>
@@ -228,27 +392,24 @@ export default function CheckoutPage() {
               </ReceiptPrinter.Root>
 
               <div className="checkout-status-message">
-                <h1>Order placed</h1>
-                <p>We'll contact you on WhatsApp to validate your order and make payment.</p>
+                <h1>{orderStatusTitle}</h1>
+                <p>{orderStatusMessage}</p>
               </div>
 
               <div className="checkout-status-actions">
                 <button className="checkout-status-download" type="button" onClick={downloadReceipt}>
                   Download Receipt
                 </button>
-                <Link to="/menu" className="checkout-status-return" onClick={clearSavedOrder}>
-                  Return to Menu
-                </Link>
               </div>
             </div>
           ) : (
-            <form className="checkout-layout" onSubmit={placeOrder}>
+            <form className="checkout-layout" onSubmit={submitSelectedPayment}>
               <div className="checkout-form">
                 <h2>Contact information</h2>
                 <input
                   name="phone"
                   onChange={updateField}
-                  placeholder="Phone number"
+                  placeholder="WhatsApp phone number"
                   required
                   type="tel"
                   value={form.phone}
@@ -296,10 +457,55 @@ export default function CheckoutPage() {
                 />
 
                 <h2>Payment options</h2>
-                <div className="checkout-payment">
-                  <strong>WhatsApp Checkout</strong>
-                  <span>Place order and pay via WhatsApp</span>
-                </div>
+                <button
+                  aria-pressed={paymentMethod === "whatsapp"}
+                  className={`checkout-payment checkout-payment-option${
+                    paymentMethod === "whatsapp" ? " is-selected" : ""
+                  }`}
+                  onClick={() => {
+                    setPaymentMethod("whatsapp");
+                    setStripeError("");
+                  }}
+                  type="button"
+                >
+                  <span className="checkout-payment-check" aria-hidden="true"></span>
+                  <span>
+                    <strong>WhatsApp Checkout</strong>
+                    <small>Place order and pay via WhatsApp</small>
+                  </span>
+                </button>
+                {whatsappNotice ? (
+                  <div className={`checkout-notice checkout-notice-${whatsappNotice.tone}`}>
+                    <span aria-hidden="true"></span>
+                    <div>
+                      <strong>{whatsappNotice.title}</strong>
+                      <p>{whatsappNotice.message}</p>
+                    </div>
+                  </div>
+                ) : null}
+                <button
+                  aria-pressed={paymentMethod === "stripe"}
+                  className={`checkout-payment checkout-payment-option${
+                    paymentMethod === "stripe" ? " is-selected" : ""
+                  }`}
+                  onClick={() => setPaymentMethod("stripe")}
+                  type="button"
+                >
+                  <span className="checkout-payment-check" aria-hidden="true"></span>
+                  <span>
+                    <strong>Pay Online</strong>
+                    <small>Pay securely by card, Apple Pay, or Google Pay</small>
+                  </span>
+                </button>
+                {checkoutNotice ? (
+                  <div className={`checkout-notice checkout-notice-${checkoutNotice.tone}`}>
+                    <span aria-hidden="true"></span>
+                    <div>
+                      <strong>{checkoutNotice.title}</strong>
+                      <p>{checkoutNotice.message}</p>
+                    </div>
+                  </div>
+                ) : null}
 
                 <label className="checkout-note">
                   <input
@@ -331,8 +537,9 @@ export default function CheckoutPage() {
                     <i className="fa fa-arrow-left"></i>
                     Return to Cart
                   </button>
-                  <button disabled={!canPlaceOrder} type="submit">
-                    Place Order
+                  <button disabled={!canSubmitOrder || stripeLoading} type="submit">
+                    {stripeLoading ? <span className="checkout-button-spinner" aria-hidden="true"></span> : null}
+                    {!paymentMethod ? "Select Payment" : paymentMethod === "stripe" ? "Pay Online" : "Place Order"}
                   </button>
                 </div>
               </div>
@@ -346,13 +553,14 @@ export default function CheckoutPage() {
                     const itemPrice = parsePrice(item.price);
 
                     return (
-                      <div className="checkout-summary-item" key={item.slug}>
+                      <div className="checkout-summary-item" key={item.cartKey ?? item.slug}>
                         <div className="checkout-summary-image">
                           <img src={item.image} alt={item.name} />
                           <span>{item.quantity}</span>
                         </div>
                         <div>
                           <h3>{item.name}</h3>
+                          {item.selectedSize ? <small>{item.selectedSize}</small> : null}
                           <p>{formatPrice(itemPrice)}</p>
                         </div>
                         <strong>{formatPrice(itemPrice * item.quantity)}</strong>

@@ -89,8 +89,20 @@ const menuCategoryByName = new Map(
   menuCategories.map((category) => [category.name, category])
 );
 
+const menuItemByName = new Map(
+  menuCategories.flatMap((category) =>
+    category.items.map((item) => [item.name, item]),
+  ),
+);
+
 const menuPreviewImage = (category) =>
   menuCategoryByName.get(category.name)?.items.find((item) => item.image)?.image ?? category.image;
+
+const menuPreviewItem = (item) => ({
+  ...item,
+  ...menuItemByName.get(item.name),
+  description: item.description,
+});
 
 const testimonialSlides = [
   {
@@ -258,7 +270,10 @@ export default function HomePage() {
                     </div>
                   </div>
                   <div className="col-lg-7">
-                    {category.items.map((item) => (
+                    {category.items.map((previewItem) => {
+                      const item = menuPreviewItem(previewItem);
+
+                      return (
                       <div className="item-wrapper d-flex justify-content-between" key={item.name}>
                         <div className="item-left">
                           <h5>{item.name}</h5>
@@ -268,7 +283,8 @@ export default function HomePage() {
                           <span className="item-price">{item.price}</span>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                     <div className="menu-preview-action">
                       <div className="book-a-table menu-leaf-button">
                         <div className="anim-layer"></div>

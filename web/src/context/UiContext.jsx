@@ -26,11 +26,12 @@ export function UiProvider({ children }) {
 
   const addToCart = (item, quantity = 1) => {
     setCartItems((items) => {
-      const existingItem = items.find((cartItem) => cartItem.slug === item.slug);
+      const itemKey = item.cartKey ?? item.slug;
+      const existingItem = items.find((cartItem) => (cartItem.cartKey ?? cartItem.slug) === itemKey);
 
       if (existingItem) {
         return items.map((cartItem) =>
-          cartItem.slug === item.slug
+          (cartItem.cartKey ?? cartItem.slug) === itemKey
             ? { ...cartItem, quantity: cartItem.quantity + quantity }
             : cartItem,
         );
@@ -41,16 +42,18 @@ export function UiProvider({ children }) {
     setCartOpen(true);
   };
 
-  const updateCartQuantity = (slug, quantity) => {
+  const updateCartQuantity = (cartKey, quantity) => {
     setCartItems((items) =>
       items.map((item) =>
-        item.slug === slug ? { ...item, quantity: Math.max(1, quantity) } : item,
+        (item.cartKey ?? item.slug) === cartKey
+          ? { ...item, quantity: Math.max(1, quantity) }
+          : item,
       ),
     );
   };
 
-  const removeFromCart = (slug) => {
-    setCartItems((items) => items.filter((item) => item.slug !== slug));
+  const removeFromCart = (cartKey) => {
+    setCartItems((items) => items.filter((item) => (item.cartKey ?? item.slug) !== cartKey));
   };
 
   const clearCart = () => {

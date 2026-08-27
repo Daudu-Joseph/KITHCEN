@@ -5,17 +5,23 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:server": "node server/index.js",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server/index.js"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
     "motion": "^13.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "stripe": "^22.6.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

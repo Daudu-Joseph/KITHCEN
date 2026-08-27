@@ -43,16 +43,19 @@ export default function Cart() {
           </div>
         ) : (
           cartItems.map((item) => (
-            <div className="shopping-cart-item" key={item.slug}>
+            <div className="shopping-cart-item" key={item.cartKey ?? item.slug}>
               <img src={item.image} alt={item.name} />
 
               <div className="shopping-cart-item-main">
                 <h3>{item.name}</h3>
+                {item.selectedSize ? (
+                  <p className="shopping-cart-item-size">{item.selectedSize}</p>
+                ) : null}
                 <div className="shopping-cart-counter">
                   <button
                     type="button"
                     aria-label={`Decrease ${item.name}`}
-                    onClick={() => updateCartQuantity(item.slug, item.quantity - 1)}
+                    onClick={() => updateCartQuantity(item.cartKey ?? item.slug, item.quantity - 1)}
                   >
                     -
                   </button>
@@ -60,7 +63,7 @@ export default function Cart() {
                   <button
                     type="button"
                     aria-label={`Increase ${item.name}`}
-                    onClick={() => updateCartQuantity(item.slug, item.quantity + 1)}
+                    onClick={() => updateCartQuantity(item.cartKey ?? item.slug, item.quantity + 1)}
                   >
                     +
                   </button>
@@ -73,7 +76,7 @@ export default function Cart() {
                   className="shopping-cart-remove"
                   type="button"
                   aria-label={`Remove ${item.name}`}
-                  onClick={() => removeFromCart(item.slug)}
+                  onClick={() => removeFromCart(item.cartKey ?? item.slug)}
                 >
                   <i className="fa fa-trash"></i>
                 </button>
