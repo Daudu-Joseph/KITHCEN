@@ -7,8 +7,15 @@ const parsePrice = (price) => {
   return match ? Number(match[0].replace(/,/g, "")) : 0;
 };
 
-const formatPrice = (value) =>
-  `£${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+const formatPrice = (value) => {
+  const price = Number(value);
+  const decimals = Number.isInteger(price) ? 0 : 2;
+
+  return `£${price.toLocaleString("en-GB", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
+};
 
 export default function Cart() {
   const navigate = useNavigate();

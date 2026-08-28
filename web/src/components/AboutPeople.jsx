@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 
-const chefImage = "/assets/images/team-1.png";
-const kitchenImage = "/assets/images/about-1.jpg";
+const peopleVideo = "/assets/videos/about-people.mp4";
 
 const sectionStyle = {
   background: "#fff",
@@ -33,26 +32,19 @@ const introStyle = {
 };
 
 const imageCardStyle = {
-  alignItems: "flex-end",
-  backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.72), rgba(0,0,0,0.24)), url(${kitchenImage})`,
-  backgroundPosition: "center",
-  backgroundSize: "cover",
   borderRadius: "16px",
-  display: "flex",
   height: "330px",
-  justifyContent: "center",
   margin: "0 auto",
   maxWidth: "760px",
   overflow: "hidden",
   position: "relative",
 };
 
-const chefStyle = {
+const videoStyle = {
   display: "block",
-  maxHeight: "320px",
-  objectFit: "contain",
-  position: "relative",
-  zIndex: 1,
+  height: "100%",
+  objectFit: "cover",
+  width: "100%",
 };
 
 export default function AboutPeople() {
@@ -91,12 +83,15 @@ export default function AboutPeople() {
             whileHover={reduceMotion ? undefined : { y: -6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.img
-              src={chefImage}
-              alt="Chop Republic chef"
-              style={chefStyle}
-              animate={reduceMotion ? undefined : { y: [0, -4, 0] }}
-              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+            <video
+              aria-label="Chop Republic team video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              src={peopleVideo}
+              style={videoStyle}
             />
           </motion.div>
         </div>

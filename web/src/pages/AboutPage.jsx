@@ -1,5 +1,6 @@
 import AboutJourney from "../components/AboutJourney";
 import AboutPeople from "../components/AboutPeople";
+import { BookingForm } from "@/components/ui/booking-form";
 
 export default function AboutPage() {
   return (
@@ -78,95 +79,24 @@ export default function AboutPage() {
       
       <AboutPeople />
 
-      <section className="reservation-form my-5 py-5">
+      <section className="my-5 py-5">
         <div className="container">
-            <div className="row">
-                <div className="col-12">
-                    <h2 data-aos="fade-right" className="text-center display-6 fw-bold">Make Reservation</h2>
-                    <div data-aos="fade-right" className="reservation-line d-flex justify-content-center align-items-center">
-                        <span></span>
-                    </div>
-                    <form action="" className="position-relative">
-                        <p className="text-center" data-aos="fade-up-right">We are happy to help with your reservation. You can call us directly through the customer service hotline: +44 7990 532631</p>
-                        <div className="row mt-5">
-                            <div className="col-md-6" data-aos="fade-right">
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                      <i className="fa fa-user py-2 px-3"></i>
-                                    </div>
-                                    <input className="form-control bg-transparent border-0 px-3" type="text" placeholder="Username" />
-                                </div>
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                      <i className="fa fa-phone py-2 px-3"></i>
-                                    </div>
-                                    <input className="form-control bg-transparent border-0 px-3" type="text" placeholder="Phone" />
-                                </div>
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                      <i className="fa fa-calendar py-2 px-3"></i>
-                                    </div>
-                                    <input className="form-control bg-transparent border-0 px-3" type="date" placeholder="Date" />
-                                </div>
-                            </div>
-                            <div className="col-md-6" data-aos="fade-left">
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                      <i className="fa fa-envelope py-2 px-3"></i>
-                                    </div>
-                                    <input className="form-control bg-transparent border-0 px-3" type="email" placeholder="Email" />
-                                </div>
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                        <i className="fa fa-person py-2 px-3"></i>
-                                    </div>
-                                    <select className="form-select bg-transparent border-0 ps-3" name="" id="">
-                                        <option value="">1 Person</option>
-                                        <option value="">2 Person</option>
-                                        <option value="">3 Person</option>
-                                        <option value="">4 Person</option>
-                                        <option value="">5 Person</option>
-                                        <option value="">6 Person</option>
-                                        <option value="">7 Person</option>
-                                        <option value="">8 Person</option>
-                                        <option value="">9 Person</option>
-                                        <option value="">10 Person</option>
-                                    </select>
-                                </div>
-                                <div className="input-group">
-                                    <div className="icon-wrapper d-flex align-items-center position-relative">
-                                        <i className="fa fa-clock py-2 px-3"></i>
-                                    </div>
-                                    <select type="text" placeholder="Time" className="ps-3 form-select bg-transparent border-0">
-                                        <option>7:00 AM</option>
-                                        <option>8:00 AM</option>
-                                        <option>9:00 AM</option>
-                                        <option>10:00 AM</option>
-                                        <option>11:00 AM</option>
-                                        <option>12:00 AM</option>
-                                        <option>1:00 PM</option>
-                                        <option>2:00 PM</option>
-                                        <option>3:00 PM</option>
-                                        <option>4:00 PM</option>
-                                        <option>5:00 PM</option>
-                                        <option>6:00 PM</option>
-                                        <option>7:00 PM</option>
-                                        <option>8:00 PM</option>
-                                        <option>9:00 PM</option>
-                                        <option>10:00 PM</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-center" data-aos="fade-up-left">
-                            <div className="book-a-table contact-button">
-                                <div className="anim-layer"></div>
-                                <a href="#">Book Table</a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+          <div className="mx-auto mb-4 max-w-3xl text-center">
+            <h2 data-aos="fade-right" className="display-6 fw-bold">
+              Book Chop Republic
+            </h2>
+            <div
+              data-aos="fade-right"
+              className="reservation-line d-flex justify-content-center align-items-center"
+            >
+              <span></span>
             </div>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-[#3a4658]">
+              Planning a private event, party tray order or corporate catering?
+              Send us the details and we will help you shape the right food plan.
+            </p>
+          </div>
+          <BookingForm />
         </div>
       </section>
 

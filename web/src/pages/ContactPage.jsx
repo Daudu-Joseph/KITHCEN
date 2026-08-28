@@ -57,19 +57,6 @@ export default function ContactPage() {
                     <div className="d-flex flex-column px-0 justify-content-between" data-aos="fade-left">
                         <div className="contact-info-box d-flex align-items-center pe-2 py-3">
                           <div className="contact-icon-box">
-                            <i className="fa-solid fa-location-dot border-bottom pb-2"></i>
-                          </div>
-                          <div className="ps-3">
-                            <p className="mb-0">
-                              <b>Restaurant</b> <br />
-                              66 Paul Street <br />
-                              London <br />
-                              EC2A 4NA
-                            </p>
-                          </div>
-                        </div>
-                        <div className="contact-info-box d-flex align-items-center pe-2 py-3">
-                          <div className="contact-icon-box">
                             <i className="fa-solid fa-phone border-bottom pb-2"></i>
                           </div>
                           <div className="ps-3">

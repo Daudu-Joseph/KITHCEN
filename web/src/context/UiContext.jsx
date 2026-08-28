@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const UiContext = createContext(null);
 const CART_STORAGE_KEY = "chop-republic-cart";
@@ -24,7 +24,7 @@ export function UiProvider({ children }) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (item, quantity = 1) => {
+  const addToCart = useCallback((item, quantity = 1) => {
     setCartItems((items) => {
       const itemKey = item.cartKey ?? item.slug;
       const existingItem = items.find((cartItem) => (cartItem.cartKey ?? cartItem.slug) === itemKey);
@@ -40,9 +40,9 @@ export function UiProvider({ children }) {
       return [...items, { ...item, quantity }];
     });
     setCartOpen(true);
-  };
+  }, []);
 
-  const updateCartQuantity = (cartKey, quantity) => {
+  const updateCartQuantity = useCallback((cartKey, quantity) => {
     setCartItems((items) =>
       items.map((item) =>
         (item.cartKey ?? item.slug) === cartKey
@@ -50,16 +50,23 @@ export function UiProvider({ children }) {
           : item,
       ),
     );
-  };
+  }, []);
 
-  const removeFromCart = (cartKey) => {
+  const removeFromCart = useCallback((cartKey) => {
     setCartItems((items) => items.filter((item) => (item.cartKey ?? item.slug) !== cartKey));
-  };
+  }, []);
 
-  const clearCart = () => {
-    setCartItems([]);
+  const clearCart = useCallback(() => {
+    setCartItems((items) => (items.length ? [] : items));
     setCartOpen(false);
-  };
+  }, []);
+
+  const openCart = useCallback(() => setCartOpen(true), []);
+  const closeCart = useCallback(() => setCartOpen(false), []);
+  const openSearch = useCallback(() => setSearchOpen(true), []);
+  const closeSearch = useCallback(() => setSearchOpen(false), []);
+  const openMobile = useCallback(() => setMobileOpen(true), []);
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   const value = useMemo(
     () => ({
@@ -71,14 +78,29 @@ export function UiProvider({ children }) {
       updateCartQuantity,
       removeFromCart,
       clearCart,
-      openCart: () => setCartOpen(true),
-      closeCart: () => setCartOpen(false),
-      openSearch: () => setSearchOpen(true),
-      closeSearch: () => setSearchOpen(false),
-      openMobile: () => setMobileOpen(true),
-      closeMobile: () => setMobileOpen(false),
+      openCart,
+      closeCart,
+      openSearch,
+      closeSearch,
+      openMobile,
+      closeMobile,
     }),
-    [cartOpen, cartItems, searchOpen, mobileOpen]
+    [
+      addToCart,
+      cartOpen,
+      cartItems,
+      clearCart,
+      closeCart,
+      closeMobile,
+      closeSearch,
+      mobileOpen,
+      openCart,
+      openMobile,
+      openSearch,
+      removeFromCart,
+      searchOpen,
+      updateCartQuantity,
+    ]
   );
 
   return <UiContext.Provider value={value}>{children}</UiContext.Provider>;

@@ -17,7 +17,7 @@ Prepared from the current website menu, the takeaway menu, the catering menu, an
 - Turkey has no takeaway option; show cooler sizes only.
 - Fufu follows Eba pricing.
 - Mackerel Fish follows Fried Fish pricing.
-- Catfish Pepper Soup follows Goat Meat Assorted Pepper Soup pricing.
+- Catfish Pepper Soup uses GBP 15 per catfish for takeaway and GBP 90 for the 6 litre cooler base.
 
 Use this as the working truth table for the size dropdown. Only show dropdowns where more than one confirmed option exists.
 
@@ -25,27 +25,27 @@ Use this as the working truth table for the size dropdown. Only show dropdowns w
 
 | Item on our menu | Takeaway | Quarter cooler / 6 litres | Half cooler / 12 litres | Full cooler / 24 litres | Notes |
 |---|---:|---:|---:|---:|---|
-| Gizzard Stick | GBP 2.30 | - | - | - | Sold as takeaway only. |
-| Suya (Small Takeaway) | GBP 8.20 | - | - | - | Catering also has Suya at GBP 100.00 for 20pcs minimum, but our menu item is small takeaway. |
-| Stick Meat | GBP 2.30 | - | - | - | Sold as takeaway only. |
-| Dodo & Gizzard | GBP 7.70 | GBP 45.00 | GBP 90.00 | GBP 180.00 | Cooler prices follow current site full cooler price GBP 180. |
+| Gizzard Stick | GBP 1.70 per stick | - | - | - | Uses our confirmed per-stick price. |
+| Suya (Small Takeaway) | GBP 15.00 | - | - | - | Uses our confirmed small takeaway price. |
+| Stick Meat | GBP 1.70 per stick | - | - | - | Uses our confirmed per-stick price. |
+| Dodo & Gizzard | GBP 7.70 | GBP 180.00 per tray | - | - | Takeaway plus tray dropdown only. |
 
 ## Swallow
 
 | Item on our menu | Takeaway | Quarter cooler / 6 litres | Half cooler / 12 litres | Full cooler / 24 litres | Notes |
 |---|---:|---:|---:|---:|---|
-| Pounded Yam | GBP 2.00 | - | - | - | Sold each/takeaway only. |
-| Eba | GBP 2.00 | - | - | - | Deliverect name is Garri (Eba). |
-| Amala | GBP 2.00 | - | - | - | Matched to Deliverect Yam Flour (Elubo). |
-| Fufu | GBP 2.00 | - | - | - | Follows Eba pricing. |
+| Pounded Yam | GBP 1.50 each | - | - | - | Sold each only. |
+| Eba | GBP 1.50 each | - | - | - | Deliverect name is Garri (Eba). |
+| Amala | GBP 1.50 each | - | - | - | Matched to Deliverect Yam Flour (Elubo). |
+| Fufu | GBP 1.50 each | - | - | - | Follows Eba pricing. |
 
 ## Sides
 
 | Item on our menu | Takeaway | Quarter cooler / 6 litres | Half cooler / 12 litres | Full cooler / 24 litres | Notes |
 |---|---:|---:|---:|---:|---|
-| Plantain | GBP 2.00 | - | - | - | Sold as takeaway only. |
-| Moi Moi (Leaf) | GBP 2.70 | - | - | - | Catering also has bulk: GBP 36.67 for 20pcs and GBP 12.50 for 10. |
-| Moi Moi (Plastic) | GBP 1.70 | - | - | - | Catering also has bulk: GBP 20.00 for 20pcs. |
+| Plantain | GBP 1.50 per portion | - | - | - | Sold per portion only. |
+| Moi Moi (Leaf) | GBP 2.50 each | - | - | - | Sold each only. |
+| Moi Moi (Plastic) | GBP 2.00 each | - | - | - | Sold each only. |
 
 ## Peppered Proteins
 
@@ -56,9 +56,9 @@ Use this as the working truth table for the size dropdown. Only show dropdowns w
 | Beef | GBP 2.50 | GBP 100.00 | GBP 200.00 | GBP 400.00 | Cooler prices follow current site full cooler price GBP 400. |
 | Hard Chicken | GBP 2.80 | GBP 75.00 | GBP 150.00 | GBP 300.00 | Cooler prices follow current site full cooler price GBP 300. |
 | Drumstick Chicken | GBP 1.60 | GBP 62.50 | GBP 125.00 | GBP 250.00 | Cooler prices follow current site full cooler price GBP 250. |
-| Fried Fish | GBP 2.20 | GBP 37.50 | GBP 75.00 | GBP 150.00 | Cooler prices follow current site tray price GBP 150. |
-| Mackerel Fish | GBP 2.20 | GBP 37.50 | GBP 75.00 | GBP 150.00 | Follows Fried Fish pricing. |
-| Ponmo | GBP 2.00 | GBP 25.00 | GBP 50.00 | GBP 100.00 | Cooler prices follow current site tray price GBP 100. |
+| Fried Fish | GBP 2.20 | GBP 150.00 per tray | - | - | Takeaway plus tray dropdown only. |
+| Mackerel Fish | GBP 2.20 | GBP 130.00 per tray | - | - | Takeaway plus tray dropdown only. |
+| Ponmo | GBP 2.00 | GBP 100.00 per tray | - | - | Takeaway plus tray dropdown only. |
 
 ## Soups
 
@@ -92,9 +92,9 @@ Use this as the working truth table for the size dropdown. Only show dropdowns w
 | Goat Meat Assorted Pepper Soup | GBP 11.00 | GBP 70.00 | GBP 140.00 | GBP 280.00 | Current site GBP 70 per 5 litres becomes quarter cooler / 6 litres. |
 | Ewa Riro & Sauce | GBP 7.20 | GBP 80.00 | GBP 160.00 | GBP 320.00 | Current site GBP 80 per 5 litres becomes quarter cooler / 6 litres. |
 | Togolese Beans & Sauce | - | GBP 80.00 | GBP 160.00 | GBP 320.00 | No takeaway option found; cooler prices follow current site GBP 80 per 5 litres. |
-| Red Bream Fish | GBP 6.00 | GBP 45.00 | GBP 90.00 | GBP 180.00 | Cooler prices follow current site tray price GBP 180. |
-| Grilled Tilapia | GBP 14.60 | - | - | - | Sold each/takeaway only on our pricing plan unless boss gives cooler price. |
-| Catfish Pepper Soup | GBP 11.00 | GBP 70.00 | GBP 140.00 | GBP 280.00 | Follows Goat Meat Assorted Pepper Soup pricing. |
+| Red Bream Fish | GBP 6.00 | GBP 180.00 per tray | - | - | Takeaway plus tray dropdown only. |
+| Grilled Tilapia | GBP 12.00 each | - | - | - | Sold each only, no dropdown. |
+| Catfish Pepper Soup | GBP 15.00 per catfish | GBP 90.00 | GBP 180.00 | GBP 360.00 | Takeaway label should show "per catfish"; half and full are calculated from the 6 litre price. |
 
 ## Pastries
 
@@ -111,5 +111,3 @@ Use this as the working truth table for the size dropdown. Only show dropdowns w
 ## Remaining Checks Before App Update
 
 - Confirm whether Gbegiri and Ewedu should really use GBP 20 as the quarter cooler / 6 litres price, because the current wording says "per litre".
-- Confirm whether Grilled Tilapia should remain takeaway/each only.
-

@@ -1,6 +1,6 @@
 import { HouseIcon, WarningIcon, XIcon } from "@phosphor-icons/react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ReceiptPrinter } from "../components/ReceiptPrinter";
 import { TactileButton } from "../components/TactileButton";
 import { useUi } from "../context/UiContext";
@@ -10,8 +10,15 @@ const parsePrice = (price) => {
   return match ? Number(match[0].replace(/,/g, "")) : 0;
 };
 
-const formatPrice = (value) =>
-  `£${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+const formatPrice = (value) => {
+  const price = Number(value);
+  const decimals = Number.isInteger(price) ? 0 : 2;
+
+  return `£${price.toLocaleString("en-GB", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
+};
 
 const initialForm = {
   phone: "",
@@ -75,9 +82,8 @@ const getInitialReceipt = (hasActiveCart) => {
 
 export default function CheckoutPage() {
   const { cartItems, clearCart, openCart } = useUi();
-  const navigate = useNavigate();
-  const isLeavingCheckoutRef = useRef(false);
   const [searchParams] = useSearchParams();
+  const processedStripeReturnRef = useRef(false);
   const initialReceipt = getInitialReceipt(cartItems.length > 0);
   const [form, setForm] = useState(initialForm);
   const [order, setOrder] = useState(() => initialReceipt.order);
@@ -220,24 +226,34 @@ export default function CheckoutPage() {
   }, [order, receiptStage]);
 
   useEffect(() => {
-    if (isLeavingCheckoutRef.current || searchParams.get("payment") !== "stripe-success" || !order) return;
+    if (
+      processedStripeReturnRef.current ||
+      searchParams.get("payment") !== "stripe-success" ||
+      !order
+    ) {
+      return;
+    }
 
     try {
+      processedStripeReturnRef.current = true;
       const paidOrder = { ...order, paymentMethod: "stripe" };
       window.localStorage.setItem(savedOrderKey, JSON.stringify(paidOrder));
       window.localStorage.removeItem(pendingStripeOrderKey);
-      navigate("/checkout", { replace: true });
+      window.history.replaceState(null, "", "/checkout");
       clearCart();
     } catch {
       window.localStorage.removeItem(pendingStripeOrderKey);
     }
-  }, [clearCart, navigate, order, searchParams]);
+  }, [clearCart, order, searchParams]);
 
   useEffect(() => {
-    if (searchParams.get("payment") !== "stripe-cancelled") return;
+    if (processedStripeReturnRef.current || searchParams.get("payment") !== "stripe-cancelled") {
+      return;
+    }
 
-    navigate("/checkout", { replace: true });
-  }, [navigate, searchParams]);
+    processedStripeReturnRef.current = true;
+    window.history.replaceState(null, "", "/checkout");
+  }, [searchParams]);
 
   const orderCustomerName = order
     ? `${order.customer.firstName} ${order.customer.lastName}`.trim()

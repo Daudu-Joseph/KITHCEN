@@ -135,22 +135,29 @@ export default function AboutJourney() {
         <div style={wrapStyle}>
           <div className="row align-items-center g-5">
             <div className="col-12 col-lg-6" data-aos="fade-right">
-              <h2 style={headingStyle}>Our Journey</h2>
+              <h2 style={headingStyle}>About Chop Republic</h2>
               <p style={textStyle}>
-                Back in November 1983, most Nigerians saw dining out as either
-                foreign fast food or roadside stalls. Mama Cass changed that by
-                bringing a true taste of home to the table.
+                At Chop Republic, food is more than what's on the plate. It is
+                culture, connection, celebration and the feeling of home.
               </p>
               <p style={textStyle}>
-                We began with a simple mission: to serve authentic, home-cooked
-                Nigerian meals to busy city professionals and families who wanted
-                real comfort food without the wait.
+                Rooted in the bold and unforgettable flavours of Nigeria, we
+                bring authentic Nigerian food to London with a fresh, modern
+                spirit. From rich, smoky jollof and perfectly seasoned meats to
+                comforting traditional favourites, every dish is prepared with
+                care, generous flavour and a whole lot of love.
+              </p>
+              <p style={textStyle}>
+                Chop Republic was created for everyone who believes great food
+                should bring people together. Whether you grew up with these
+                flavours or you are discovering them for the first time, our
+                table is always open.
               </p>
               <p style={{ ...textStyle, marginBottom: 0 }}>
-                Mama Cass is more than just food; it is a way to relive special
-                moments. From smoky Jollof rice to soft pounded yam and our
-                unique Ofada rice, every dish takes you back to family and joyful
-                village celebrations.
+                We are proud of where our food comes from, excited about where
+                Nigerian cuisine is going, and passionate about creating meals
+                worth coming back for. Welcome to Chop Republic, a flavour
+                nation where every bite feels like home.
               </p>
             </div>
 
@@ -165,9 +172,9 @@ export default function AboutJourney() {
                 icon={<Target size={46} color="#f3262c" weight="bold" />}
                 title="Our Mission"
               >
-                Our mission is to serve fresh dishes with a twist, creating a
-                welcoming space where people connect over good food and warm
-                hospitality.
+                Our mission is to share authentic Nigerian food with care,
+                generous flavour and warm hospitality, creating meals that bring
+                people together and make every guest feel at home.
               </InfoCard>
             </div>
 
@@ -176,8 +183,9 @@ export default function AboutJourney() {
                 icon={<Eye size={46} color="#f3262c" weight="bold" />}
                 title="Our Vision"
               >
-                To be the destination for fresh and exciting food that creates a
-                welcoming space and feels like home.
+                Our vision is to become London's flavour nation for modern
+                Nigerian dining, proudly carrying our culture forward while
+                making every bite worth coming back for.
               </InfoCard>
             </div>
           </div>

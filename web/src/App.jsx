@@ -21,7 +21,8 @@ export default function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/menu/:itemSlug" element={<MenuItemPage />} />
-            <Route path="/reservation" element={<ReservationPage />} />
+            <Route path="/booking" element={<ReservationPage />} />
+            <Route path="/reservation" element={<Navigate to="/booking" replace />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

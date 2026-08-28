@@ -107,24 +107,24 @@ const menuPreviewItem = (item) => ({
 const testimonialSlides = [
   {
     quote:
-      "The food was absolutely amazing. Every bite tasted fresh, properly seasoned, and full of the Chop Republic flavour we wanted for our family order.",
-    name: "Olivia Brown",
-    role: "Customer",
-    image: "/assets/images/testi-1.jpg",
+      "The jollof, plantain and chicken reminded me of proper Sunday food at home. Everything tasted fresh, smoky and carefully seasoned.",
+    name: "Adebayo Oladipo",
+    role: "Family order",
+    image: "/assets/images/testimonials/adebayo-oladipo.jpeg",
   },
   {
     quote:
-      "Great service and even better food. The ordering was smooth, the portions were generous, and everything arrived with that proper home-cooked taste.",
-    name: "James Carter",
-    role: "Food Lover",
-    image: "/assets/images/testi-2.jpg",
+      "I stopped in for rice and chicken and ended up telling my sisters about it. The flavour was bold without being too much, and the portion was generous.",
+    name: "Ifeoma Nwosu",
+    role: "Lunch customer",
+    image: "/assets/images/testimonials/ifeoma-nwosu.jpeg",
   },
   {
     quote:
-      "I ordered for a small event and everything was on point. The trays were packed well, delivery was clear, and guests kept asking where the food came from.",
-    name: "Daniel Smith",
-    role: "Event Organizer",
-    image: "/assets/images/testi-3.jpg",
+      "We used Chop Republic for a small office gathering and the food disappeared quickly. The rice had that party taste and the service was calm and organised.",
+    name: "Tomiwa Bakare",
+    role: "Corporate booking",
+    image: "/assets/images/testimonials/tomiwa-bakare.jpeg",
   },
   {
     quote:
@@ -459,157 +459,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="our-chefs py-4">
-        <div className="container">
-          <div className="row" data-aos="fade-right">
-            <div className="section-title text-center">
-              <h5>Meet Our</h5>
-              <h2 className="display-6 fw-bold">Awesome Master Chefs</h2>
-            </div>
-          </div>
-
-          <div className="row our-chef-slider-wrapper py-5" data-aos="fade-left">
-            <div className="col-lg-4">
-              <div className="our-chef-slider d-flex flex-column align-items-center gap-4">
-                <img width="200px" src="/assets/images/team-1.png" alt="" />
-                <div className="chef-slider-content">
-                  <h5 className="text-center d-block">Teresa Doe</h5>
-                  <p className="text-center mb-0">Head Chef</p>
-                  <div className="d-flex justify-content-center">
-                    <hr className="w-25 my-2" />
-                  </div> 
-                  <ul className="list-unstyled d-flex justify-content-center">
-                    <li className="mx-2">
-                      <a href="https://www.facebook.com" target="_blank" className="text-white">
-                        <i className="fab fa-facebook-f"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.instagram.com" target="_blank" className="text-white">
-                        <i className="fab fa-instagram"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.twitter.com" target="_blank" className="text-white">
-                        <i className="fab fa-twitter"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.linkedin.com" target="_blank" className="text-white">
-                        <i className="fab fa-linkedin-in"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="our-chef-slider d-flex flex-column align-items-center gap-4">
-                <img width="200px" src="/assets/images/team-2.png" alt="" />
-                <div className="chef-slider-content">
-                  <h5 className="text-center d-block">Teresa Doe</h5>
-                  <p className="text-center mb-0">Head Chef</p>
-                  <div className="d-flex justify-content-center">
-                    <hr className="w-25 my-2" />
-                  </div> 
-                  <ul className="list-unstyled d-flex justify-content-center">
-                    <li className="mx-2">
-                      <a href="https://www.facebook.com" target="_blank" className="text-white">
-                        <i className="fab fa-facebook-f"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.instagram.com" target="_blank" className="text-white">
-                        <i className="fab fa-instagram"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.twitter.com" target="_blank" className="text-white">
-                        <i className="fab fa-twitter"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.linkedin.com" target="_blank" className="text-white">
-                        <i className="fab fa-linkedin-in"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="our-chef-slider d-flex flex-column align-items-center gap-4">
-                <img width="200px" src="/assets/images/team-3.png" alt="" />
-                <div className="chef-slider-content">
-                  <h5 className="text-center d-block">Teresa Doe</h5>
-                  <p className="text-center mb-0">Head Chef</p>
-                  <div className="d-flex justify-content-center">
-                    <hr className="w-25 my-2" />
-                  </div> 
-                  <ul className="list-unstyled d-flex justify-content-center">
-                    <li className="mx-2">
-                      <a href="https://www.facebook.com" target="_blank" className="text-white">
-                        <i className="fab fa-facebook-f"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.instagram.com" target="_blank" className="text-white">
-                        <i className="fab fa-instagram"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.twitter.com" target="_blank" className="text-white">
-                        <i className="fab fa-twitter"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.linkedin.com" target="_blank" className="text-white">
-                        <i className="fab fa-linkedin-in"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="our-chef-slider d-flex flex-column align-items-center gap-4">
-                <img width="200px" src="/assets/images/team-4.png" alt="" />
-                <div className="chef-slider-content">
-                  <h5 className="text-center d-block">Teresa Doe</h5>
-                  <p className="text-center mb-0">Head Chef</p>
-                  <div className="d-flex justify-content-center">
-                    <hr className="w-25 my-2" />
-                  </div> 
-                  <ul className="list-unstyled d-flex justify-content-center">
-                    <li className="mx-2">
-                      <a href="https://www.facebook.com" target="_blank" className="text-white">
-                        <i className="fab fa-facebook-f"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.instagram.com" target="_blank" className="text-white">
-                        <i className="fab fa-instagram"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.twitter.com" target="_blank" className="text-white">
-                        <i className="fab fa-twitter"></i>
-                      </a>
-                    </li>
-                    <li className="mx-2">
-                      <a href="https://www.linkedin.com" target="_blank" className="text-white">
-                        <i className="fab fa-linkedin-in"></i>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      </section>
-      
       <section className="our-services py-5 my-5">
         <div className="container">
           <div className="row">
@@ -624,8 +473,8 @@ export default function HomePage() {
                 <i className="fas fa-utensils fa-2x"></i>
                 <span className="number">1</span>
               </div>
-              <h4>Reservation</h4>
-              <p className="text-center">Lorem ipsum dolor sit amet, tong consecteturto sed eiusmod incididunt utote labore et</p>
+              <h4>Booking</h4>
+              <p className="text-center">Plan private events, catering orders and party trays with our team.</p>
             </div>
             <div data-aos="fade-down" className="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center align-items-center flex-column">
               <div className="icon-box">
@@ -633,7 +482,7 @@ export default function HomePage() {
                 <span className="number">2</span>
               </div>
               <h4>Private Event</h4>
-              <p className="text-center">Lorem ipsum dolor sit amet, tong consecteturto sed eiusmod incididunt utote labore et</p>
+              <p className="text-center">Bring Chop Republic flavour to birthdays, gatherings and special moments.</p>
             </div>
             <div data-aos="fade-up" className="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center align-items-center flex-column">
               <div className="icon-box">
@@ -641,7 +490,7 @@ export default function HomePage() {
                 <span className="number">3</span>
               </div>
               <h4>Online Order</h4>
-              <p className="text-center">Lorem ipsum dolor sit amet, tong consecteturto sed eiusmod incididunt utote labore et</p>
+              <p className="text-center">Order takeaway, coolers and trays directly from the menu.</p>
             </div>
             <div data-aos="fade-up-left" className="col-sm-12 col-md-6 col-lg-3 d-flex justify-content-center align-items-center flex-column">
               <div className="icon-box">
@@ -649,7 +498,7 @@ export default function HomePage() {
                 <span className="number">4</span>
               </div>
               <h4>Fast Delivery</h4>
-              <p className="text-center">Lorem ipsum dolor sit amet, tong consecteturto sed eiusmod incididunt utote labore et</p>
+              <p className="text-center">Get support with timing and delivery details for your food.</p>
             </div>
           </div>
         </div>

@@ -56,11 +56,15 @@ const foodImages = {
 
 const foodImage = (filename) => foodImages[filename];
 
-const formatPrice = (value) =>
-  `£${value.toLocaleString(undefined, {
-    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
-    maximumFractionDigits: 2,
+const formatPrice = (value) => {
+  const price = Number(value);
+  const decimals = Number.isInteger(price) ? 0 : 2;
+
+  return `£${price.toLocaleString("en-GB", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
   })}`;
+};
 
 const sizeOption = (label, value) => ({
   label,
@@ -82,25 +86,28 @@ const takeawayCoolerOptions = (takeaway, quarter, half, full) => [
 ];
 
 const itemSizeOptions = {
-  "Gizzard Stick": [takeawayOption(2.3)],
-  "Suya (Small Takeaway)": [takeawayOption(8.2)],
-  "Stick Meat": [takeawayOption(2.3)],
-  "Dodo & Gizzard": takeawayCoolerOptions(7.7, 45, 90, 180),
-  "Pounded Yam": [eachOption(2)],
-  Eba: [eachOption(2)],
-  Amala: [eachOption(2)],
-  Fufu: [eachOption(2)],
-  Plantain: [takeawayOption(2)],
-  "Moi Moi (Leaf)": [eachOption(2.7)],
-  "Moi Moi (Plastic)": [eachOption(1.7)],
+  "Gizzard Stick": [sizeOption("Per stick", 1.7)],
+  "Suya (Small Takeaway)": [takeawayOption(15)],
+  "Stick Meat": [sizeOption("Per stick", 1.7)],
+  "Dodo & Gizzard": [
+    takeawayOption(7.7),
+    sizeOption("Tray", 180),
+  ],
+  "Pounded Yam": [eachOption(1.5)],
+  Eba: [eachOption(1.5)],
+  Amala: [eachOption(1.5)],
+  Fufu: [eachOption(1.5)],
+  Plantain: [sizeOption("Portion", 1.5)],
+  "Moi Moi (Leaf)": [eachOption(2.5)],
+  "Moi Moi (Plastic)": [eachOption(2)],
   Turkey: coolerOptions(62.5, 125, 250),
   "Assorted Stew": takeawayCoolerOptions(7.5, 90, 180, 360),
   Beef: takeawayCoolerOptions(2.5, 100, 200, 400),
   "Hard Chicken": takeawayCoolerOptions(2.8, 75, 150, 300),
   "Drumstick Chicken": takeawayCoolerOptions(1.6, 62.5, 125, 250),
-  "Fried Fish": takeawayCoolerOptions(2.2, 37.5, 75, 150),
-  "Mackerel Fish": takeawayCoolerOptions(2.2, 37.5, 75, 150),
-  Ponmo: takeawayCoolerOptions(2, 25, 50, 100),
+  "Fried Fish": [takeawayOption(2.2), sizeOption("Tray", 150)],
+  "Mackerel Fish": [takeawayOption(2.2), sizeOption("Tray", 130)],
+  Ponmo: [takeawayOption(2), sizeOption("Tray", 100)],
   Gbegiri: takeawayCoolerOptions(3, 20, 40, 80),
   "Bitter Leaf Soup": takeawayCoolerOptions(7, 90, 180, 360),
   "Edikang Ikong": takeawayCoolerOptions(7, 90, 180, 360),
@@ -119,9 +126,12 @@ const itemSizeOptions = {
   "Goat Meat Assorted Pepper Soup": takeawayCoolerOptions(11, 70, 140, 280),
   "Ewa Riro & Sauce": takeawayCoolerOptions(7.2, 80, 160, 320),
   "Togolese Beans & Sauce": coolerOptions(80, 160, 320),
-  "Red Bream Fish": takeawayCoolerOptions(6, 45, 90, 180),
-  "Grilled Tilapia": [eachOption(14.6)],
-  "Catfish Pepper Soup": takeawayCoolerOptions(11, 70, 140, 280),
+  "Red Bream Fish": [takeawayOption(6), sizeOption("Tray", 180)],
+  "Grilled Tilapia": [eachOption(12)],
+  "Catfish Pepper Soup": [
+    sizeOption("Takeaway (per catfish)", 15),
+    ...coolerOptions(90, 180, 360),
+  ],
   "Puff Puff": takeawayCoolerOptions(1.7, 20, 40, 80),
   "Chicken Pie": [eachOption(2.5)],
   "Meat Pie": [eachOption(2.5)],
@@ -311,3 +321,4 @@ export const menuCategories = rawMenuCategories.map((category) => ({
   ...category,
   items: category.items.map(withSizeOptions),
 }));
+

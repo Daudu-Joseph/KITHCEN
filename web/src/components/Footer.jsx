@@ -8,7 +8,7 @@ const footerColumns = [
     title: "Menu",
     links: [
       { label: "Menu", to: "/menu" },
-      { label: "Reservations", to: "/reservation" },
+      { label: "Booking", to: "/booking" },
       { label: "Contact", to: "/contact" },
     ],
   },
@@ -16,7 +16,7 @@ const footerColumns = [
     title: "Company",
     links: [
       { label: "About", to: "/about" },
-      { label: "Catering", to: "/contact" },
+      { label: "Catering", to: "/booking" },
     ],
   },
   {
