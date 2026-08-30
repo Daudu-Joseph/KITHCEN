@@ -1,5 +1,6 @@
 import AboutJourney from "../components/AboutJourney";
 import AboutPeople from "../components/AboutPeople";
+import PremiumGridBackground from "../components/PremiumGridBackground";
 import { BookingForm } from "@/components/ui/booking-form";
 
 export default function AboutPage() {
@@ -23,63 +24,11 @@ export default function AboutPage() {
       </section>
 
       <AboutJourney />
-
-      <section className="counter my-5">
-        <img data-aos="fade-right" className="counter-after" src="/assets/images/vegetable_01.png" alt="" />
-        <img data-aos="fade-right" className="counter-before" src="/assets/images/vegetable_02.png" alt="" />
-        <div className="container pt-4 pb-5" data-aos="fade-up-right">
-          <div className="row py-5">
-            <div className="col-lg-3">
-              <div className="counter-box d-flex flex-column align-items-center">
-                <div className="counter-info pb-3">
-                  <span className="number">103</span>
-                  <span className="heading">/dishes</span>
-                </div>
-                <div className="counter-avatar pt-4">
-                  <img src="/assets/images/counter-1.png" alt="" />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3">
-              <div className="counter-box d-flex flex-column align-items-center">
-                <div className="counter-info pb-3">
-                  <span className="number">2389</span>
-                  <span className="heading">/customers</span>
-                </div>
-                <div className="counter-avatar pt-4">
-                  <img src="/assets/images/counter-2.png" alt="" />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3">
-              <div className="counter-box d-flex flex-column align-items-center">
-                <div className="counter-info pb-3">
-                  <span className="number">20</span>
-                  <span className="heading">/awards</span>
-                </div>
-                <div className="counter-avatar pt-4">
-                  <img src="/assets/images/counter-3.png" alt="" />
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-3">
-              <div className="counter-box d-flex flex-column align-items-center">
-                <div className="counter-info pb-3">
-                  <span className="number">2589</span>
-                  <span className="heading">/working hours</span>
-                </div>
-                <div className="counter-avatar pt-4">
-                  <img src="/assets/images/counter-4.png" alt="" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       
       <AboutPeople />
 
-      <section className="my-5 py-5">
+      <section className="premium-grid-section my-5 py-5">
+        <PremiumGridBackground />
         <div className="container">
           <div className="mx-auto mb-4 max-w-3xl text-center">
             <h2 data-aos="fade-right" className="display-6 fw-bold">

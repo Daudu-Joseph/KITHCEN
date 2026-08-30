@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
+import PremiumGridBackground from "./PremiumGridBackground";
 import { menuCategories, menuItemSlug } from "../pages/menuData";
 
 const specials = menuCategories.find((category) => category.name === "Specials")?.items ?? [];
@@ -316,7 +317,8 @@ export default function HomeSpecialOffers() {
   }
 
   return (
-    <section style={sectionStyle}>
+    <section className="premium-grid-section" style={sectionStyle}>
+      <PremiumGridBackground />
       <div className="container">
         <motion.div
           className="text-center"

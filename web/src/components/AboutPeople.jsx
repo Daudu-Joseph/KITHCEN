@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "motion/react";
+import PremiumGridBackground from "./PremiumGridBackground";
 
 const peopleVideo = "/assets/videos/about-people.mp4";
 
@@ -51,7 +52,8 @@ export default function AboutPeople() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <section style={sectionStyle}>
+    <section className="premium-grid-section" style={sectionStyle}>
+      <PremiumGridBackground />
       <div className="container">
         <div style={wrapStyle}>
           <motion.h2

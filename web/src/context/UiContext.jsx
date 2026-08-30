@@ -7,6 +7,12 @@ const getInitialCartItems = () => {
   if (typeof window === "undefined") return [];
 
   try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("payment") === "stripe-success") {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      return [];
+    }
+
     const storedItems = window.localStorage.getItem(CART_STORAGE_KEY);
     return storedItems ? JSON.parse(storedItems) : [];
   } catch {

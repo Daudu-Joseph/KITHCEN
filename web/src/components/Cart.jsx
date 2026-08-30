@@ -94,11 +94,6 @@ export default function Cart() {
       </div>
 
       <div className="shopping-cart-footer">
-        <button className="cart-promo-toggle" type="button">
-          <span>Apply a promo code</span>
-          <i className="fa fa-angle-up"></i>
-        </button>
-
         <div className="cart-subtotal">
           <div>
             <h2>
@@ -119,7 +114,7 @@ export default function Cart() {
           }}
         >
           <i className="fa fa-lock"></i>
-          Checkout Now
+          <span>Checkout Now</span>
         </button>
       </div>
     </aside>

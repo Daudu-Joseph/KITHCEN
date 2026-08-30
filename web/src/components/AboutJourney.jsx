@@ -1,5 +1,6 @@
 import { Eye, Target } from "@phosphor-icons/react";
 import { motion, useReducedMotion } from "motion/react";
+import PremiumGridBackground from "./PremiumGridBackground";
 
 const storyImage = "/assets/images/about-3.jpg";
 
@@ -130,7 +131,8 @@ function InfoCard({ icon, title, children }) {
 
 export default function AboutJourney() {
   return (
-    <section style={sectionStyle}>
+    <section className="premium-grid-section" style={sectionStyle}>
+      <PremiumGridBackground />
       <div className="container">
         <div style={wrapStyle}>
           <div className="row align-items-center g-5">

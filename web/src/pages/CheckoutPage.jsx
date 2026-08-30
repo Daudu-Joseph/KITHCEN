@@ -5,6 +5,8 @@ import { ReceiptPrinter } from "../components/ReceiptPrinter";
 import { TactileButton } from "../components/TactileButton";
 import { useUi } from "../context/UiContext";
 
+const ONLINE_DELIVERY_FEE = 5;
+
 const parsePrice = (price) => {
   const match = price.match(/[\d,.]+/);
   return match ? Number(match[0].replace(/,/g, "")) : 0;
@@ -14,7 +16,7 @@ const formatPrice = (value) => {
   const price = Number(value);
   const decimals = Number.isInteger(price) ? 0 : 2;
 
-  return `£${price.toLocaleString("en-GB", {
+  return `\u00a3${price.toLocaleString("en-GB", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })}`;
@@ -99,6 +101,9 @@ export default function CheckoutPage() {
   const [stripeLoading, setStripeLoading] = useState(false);
   const [whatsappLoading, setWhatsappLoading] = useState(false);
   const [whatsappSendStatus, setWhatsappSendStatus] = useState(null);
+  const [onlineFulfillmentModalOpen, setOnlineFulfillmentModalOpen] = useState(false);
+  const [onlineFulfillmentMethod, setOnlineFulfillmentMethod] = useState("pickup");
+  const [onlineDeliveryAddress, setOnlineDeliveryAddress] = useState("");
 
   const subtotal = useMemo(
     () => cartItems.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0),
@@ -116,6 +121,10 @@ export default function CheckoutPage() {
   const canPlaceOrder =
     cartItems.length > 0 && requiredFields.every((field) => String(form[field]).trim().length > 0);
   const canSubmitOrder = canPlaceOrder && Boolean(paymentMethod);
+  const onlineDeliveryFee = onlineFulfillmentMethod === "delivery" ? ONLINE_DELIVERY_FEE : 0;
+  const onlinePaymentTotal = subtotal + onlineDeliveryFee;
+  const canConfirmOnlineFulfillment =
+    onlineFulfillmentMethod === "pickup" || onlineDeliveryAddress.trim().length > 0;
 
   const updateField = (event) => {
     const { name, type, checked, value } = event.target;
@@ -125,13 +134,21 @@ export default function CheckoutPage() {
     }));
   };
 
-  const buildOrderSnapshot = (method = paymentMethod) => ({
-    customer: { ...form },
+  const getOnlineFulfillmentCustomer = () => ({
+    ...form,
+    fulfillmentMethod: onlineFulfillmentMethod,
+    deliveryAddress:
+      onlineFulfillmentMethod === "delivery" ? onlineDeliveryAddress.trim() : "",
+    deliveryFee: onlineDeliveryFee,
+  });
+
+  const buildOrderSnapshot = (method = paymentMethod, customer = form, total = subtotal) => ({
+    customer: { ...customer },
     date: new Date().toISOString(),
     items: cartItems.map((item) => ({ ...item })),
     orderNumber: "",
     paymentMethod: method,
-    total: subtotal,
+    total,
   });
 
   const placeWhatsappOrder = async () => {
@@ -149,7 +166,8 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           customer: form,
-          items: cartItems.map(({ name, price, quantity, selectedSize }) => ({
+          items: cartItems.map(({ image, name, price, quantity, selectedSize }) => ({
+            image,
             name,
             price,
             quantity,
@@ -197,7 +215,8 @@ export default function CheckoutPage() {
     if (!canSubmitOrder) return;
 
     if (paymentMethod === "stripe") {
-      startStripeCheckout();
+      setOnlineDeliveryAddress((currentAddress) => currentAddress || form.address);
+      setOnlineFulfillmentModalOpen(true);
       return;
     }
 
@@ -207,7 +226,8 @@ export default function CheckoutPage() {
   const startStripeCheckout = async () => {
     if (!canSubmitOrder || stripeLoading) return;
 
-    const pendingOrder = buildOrderSnapshot("stripe");
+    const onlineCustomer = getOnlineFulfillmentCustomer();
+    const pendingOrder = buildOrderSnapshot("stripe", onlineCustomer, onlinePaymentTotal);
     setStripeError("");
     setStripeLoading(true);
 
@@ -218,14 +238,16 @@ export default function CheckoutPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          customer: form,
-          items: cartItems.map(({ name, price, quantity, selectedSize }) => ({
+          customer: onlineCustomer,
+          items: cartItems.map(({ image, name, price, quantity, selectedSize }) => ({
+            image,
             name,
             price,
             quantity,
             selectedSize,
           })),
-          total: subtotal,
+          deliveryFee: onlineDeliveryFee,
+          total: onlinePaymentTotal,
         }),
       });
       const data = await response.json().catch(() => ({}));
@@ -240,7 +262,7 @@ export default function CheckoutPage() {
         JSON.stringify({
           ...pendingOrder,
           ...data.order,
-          customer: { ...form, ...data.order.customer },
+          customer: { ...onlineCustomer, ...data.order.customer },
           items: pendingOrder.items,
           paymentMethod: "stripe",
         }),
@@ -256,6 +278,12 @@ export default function CheckoutPage() {
       );
       setStripeLoading(false);
     }
+  };
+
+  const confirmOnlineFulfillment = () => {
+    if (!canConfirmOnlineFulfillment) return;
+    setOnlineFulfillmentModalOpen(false);
+    startStripeCheckout();
   };
 
   const downloadReceipt = () => {
@@ -293,6 +321,7 @@ export default function CheckoutPage() {
 
     const confirmStripeOrder = async () => {
       processedStripeReturnRef.current = true;
+      clearCart();
       const sessionId = searchParams.get("session_id");
       let paidOrder = { ...order, paymentMethod: "stripe", status: "PAID_ONLINE" };
 
@@ -327,7 +356,6 @@ export default function CheckoutPage() {
       window.localStorage.removeItem(pendingStripeOrderKey);
       window.history.replaceState(null, "", "/checkout");
       setOrder(paidOrder);
-      clearCart();
     };
 
     confirmStripeOrder();
@@ -392,6 +420,102 @@ export default function CheckoutPage() {
           </button>
         </div>
       ) : null}
+      {onlineFulfillmentModalOpen ? (
+        <div className="checkout-modal-backdrop" role="presentation">
+          <div
+            aria-labelledby="online-fulfillment-title"
+            aria-modal="true"
+            className="checkout-modal"
+            role="dialog"
+          >
+            <div className="checkout-modal-header">
+              <div>
+                <span>Pay Online</span>
+                <h2 id="online-fulfillment-title">Pickup or delivery?</h2>
+              </div>
+              <button
+                aria-label="Close pickup or delivery modal"
+                onClick={() => setOnlineFulfillmentModalOpen(false)}
+                type="button"
+              >
+                <XIcon aria-hidden="true" size={20} />
+              </button>
+            </div>
+
+            <div className="checkout-fulfillment-options">
+              <button
+                aria-pressed={onlineFulfillmentMethod === "pickup"}
+                className={onlineFulfillmentMethod === "pickup" ? "is-selected" : ""}
+                onClick={() => setOnlineFulfillmentMethod("pickup")}
+                type="button"
+              >
+                <strong>Pickup</strong>
+                <small>Pickup details will be sent after your order is confirmed.</small>
+              </button>
+              <button
+                aria-pressed={onlineFulfillmentMethod === "delivery"}
+                className={onlineFulfillmentMethod === "delivery" ? "is-selected" : ""}
+                onClick={() => setOnlineFulfillmentMethod("delivery")}
+                type="button"
+              >
+                <strong>Delivery</strong>
+                <small>Delivery fee is added before payment.</small>
+              </button>
+            </div>
+
+            {onlineFulfillmentMethod === "delivery" ? (
+              <label className="checkout-modal-field">
+                <span>Delivery address</span>
+                <textarea
+                  onChange={(event) => setOnlineDeliveryAddress(event.target.value)}
+                  placeholder="Enter the delivery address"
+                  rows="3"
+                  value={onlineDeliveryAddress}
+                />
+              </label>
+            ) : (
+              <div className="checkout-modal-note">
+                Pickup location will be emailed or sent to your WhatsApp after confirmation.
+              </div>
+            )}
+
+            <div className="checkout-modal-totals">
+              <div>
+                <span>Food total</span>
+                <strong>{formatPrice(subtotal)}</strong>
+              </div>
+              <div>
+                <span>Delivery</span>
+                <strong>{onlineDeliveryFee ? formatPrice(onlineDeliveryFee) : formatPrice(0)}</strong>
+              </div>
+              <div>
+                <span>Total to pay</span>
+                <strong>{formatPrice(onlinePaymentTotal)}</strong>
+              </div>
+            </div>
+
+            <div className="checkout-modal-actions">
+              <button
+                className="checkout-modal-secondary"
+                onClick={() => setOnlineFulfillmentModalOpen(false)}
+                type="button"
+              >
+                Back
+              </button>
+              <button
+                disabled={!canConfirmOnlineFulfillment || stripeLoading}
+                onClick={confirmOnlineFulfillment}
+                type="button"
+              >
+                {stripeLoading ? (
+                  <span className="checkout-button-spinner" aria-hidden="true"></span>
+                ) : null}
+                Continue to Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <section className="checkout-section">
         <div className="container">
           {order ? (
@@ -452,6 +576,12 @@ export default function CheckoutPage() {
 
                     <div className="printed-receipt-rule"></div>
                     <dl className="printed-receipt-total">
+                      {order.customer.deliveryFee ? (
+                        <div>
+                          <dt>Delivery</dt>
+                          <dd>{formatPrice(order.customer.deliveryFee)}</dd>
+                        </div>
+                      ) : null}
                       <div>
                         <dt>Total</dt>
                         <dd>{formatPrice(order.total)}</dd>
@@ -479,6 +609,18 @@ export default function CheckoutPage() {
                         <dt>Address</dt>
                         <dd>{order.customer.address}</dd>
                       </div>
+                      {order.customer.fulfillmentMethod ? (
+                        <div>
+                          <dt>Fulfilment</dt>
+                          <dd>{order.customer.fulfillmentMethod}</dd>
+                        </div>
+                      ) : null}
+                      {order.customer.deliveryAddress ? (
+                        <div>
+                          <dt>Delivery</dt>
+                          <dd>{order.customer.deliveryAddress}</dd>
+                        </div>
+                      ) : null}
                       {order.customer.orderNote.trim() ? (
                         <div>
                           <dt>Note</dt>

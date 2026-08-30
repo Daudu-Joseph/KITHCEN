@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import HomeSpecialOffers from "../components/HomeSpecialOffers";
+import PremiumGridBackground from "../components/PremiumGridBackground";
 import { menuCategories } from "./menuData";
 
 const menuPreviewCategories = [
@@ -108,7 +109,7 @@ const menuPreviewItem = (item) => ({
 const testimonialSlides = [
   {
     quote:
-      "The egusi and pounded yam tasted like proper home food. The soup had depth, the swallow was soft, and the portions were generous.",
+      "The jollof rice came fresh, smoky and full of flavour. The tray was generous, the meat was seasoned well, and everyone kept going back for more.",
     name: "Adebayo Oladipo",
     role: "Family order",
     image: "/assets/images/testimonials/adebayo-oladipo.jpeg",
@@ -228,7 +229,8 @@ export default function HomePage() {
         </div>
       </section>
       
-      <section className="about-us py-5">
+      <section className="about-us premium-grid-section py-5">
+        <PremiumGridBackground />
         <div className="container">
           <div className="row gy-5 g-lg-5 align-items-center justify-content-center">
               <div className="col-lg-6 about-img-box" data-aos="fade-right">
@@ -260,7 +262,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="our-menu py-5 my-5">
+      <section className="our-menu premium-grid-section py-5 my-5">
+        <PremiumGridBackground />
         <div className="container">
           <div className="row" data-aos="fade-right">
             <div className="section-title text-center">
@@ -329,7 +332,8 @@ export default function HomePage() {
 
       <HomeSpecialOffers />
 
-      <section className="services home-menu-services py-4">
+      <section className="services home-menu-services premium-grid-section py-4">
+        <PremiumGridBackground />
         <div className="container">
           <div className="row">
             <div className="services-heading text-center">
@@ -487,7 +491,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="our-services py-5 my-5">
+      <section className="our-services premium-grid-section py-5 my-5">
+        <PremiumGridBackground />
         <div className="container">
           <div className="row">
             <div className="section-title text-center" data-aos="fade-right">
@@ -532,7 +537,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="home-faq py-5">
+      <section className="home-faq premium-grid-section py-5">
+        <PremiumGridBackground />
         <div className="container">
           <div className="home-faq-layout">
             <div className="home-faq-intro">
