@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import HomeSpecialOffers from "../components/HomeSpecialOffers";
 import { menuCategories } from "./menuData";
 
@@ -107,35 +108,60 @@ const menuPreviewItem = (item) => ({
 const testimonialSlides = [
   {
     quote:
-      "The jollof, plantain and chicken reminded me of proper Sunday food at home. Everything tasted fresh, smoky and carefully seasoned.",
+      "The egusi and pounded yam tasted like proper home food. The soup had depth, the swallow was soft, and the portions were generous.",
     name: "Adebayo Oladipo",
     role: "Family order",
     image: "/assets/images/testimonials/adebayo-oladipo.jpeg",
+    rating: 5,
   },
   {
     quote:
-      "I stopped in for rice and chicken and ended up telling my sisters about it. The flavour was bold without being too much, and the portion was generous.",
-    name: "Ifeoma Nwosu",
+      "I ordered efo riro with eba and it hit exactly right. Rich flavour, good spice, and the food still felt fresh when it arrived.",
+    name: "Tunde Akinwale",
     role: "Lunch customer",
-    image: "/assets/images/testimonials/ifeoma-nwosu.jpeg",
+    image: "/assets/images/testimonials/ifeoma-nwosu.png",
+    rating: 5,
   },
   {
     quote:
-      "We used Chop Republic for a small office gathering and the food disappeared quickly. The rice had that party taste and the service was calm and organised.",
+      "We booked Chop Republic for an office lunch and the ogbono, jollof and meats went fast. Service was organised and the food felt properly Nigerian.",
     name: "Tomiwa Bakare",
     role: "Corporate booking",
     image: "/assets/images/testimonials/tomiwa-bakare.jpeg",
+    rating: 4.5,
   },
   {
     quote:
-      "One of the best Nigerian food experiences I have had in London. Quality food, excellent service, and unforgettable taste from start to finish.",
-    name: "Amara Lewis",
-    role: "Customer",
-    image: "/assets/images/testi-4.jpg",
+      "The bitter leaf soup and fufu were the reason I came back. You can taste the care in the stock, the seasoning and the swallow texture.",
+    name: "Chinedu Okeke",
+    role: "Soup lover",
+    image: "/assets/images/testimonials/chinedu-okeke.png",
+    rating: 5,
   },
 ];
 
 const testimonialAnimationMs = 680;
+
+function ReviewStars({ rating }) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+
+  return (
+    <div className="fresh-testimonial-stars" aria-label={`${rating} out of 5 stars`}>
+      {Array.from({ length: 5 }, (_, index) => {
+        if (index < fullStars) {
+          return <i key={index} className="fa-solid fa-star"></i>;
+        }
+
+        if (index === fullStars && hasHalfStar) {
+          return <i key={index} className="fa-solid fa-star-half-stroke"></i>;
+        }
+
+        return <i key={index} className="fa-regular fa-star"></i>;
+      })}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -192,7 +218,7 @@ export default function HomePage() {
                 </p>
                 <div className="book-a-table">
                   <div className="anim-layer"></div>
-                  <a href="#">Book a table</a>
+                  <Link to="/menu">Order Now</Link>
                 </div>
             </div>
             <div className="col-md-6 banner-img" data-aos="fade-left" data-aos-delay="0">
@@ -389,10 +415,11 @@ export default function HomePage() {
             </div>
 
             <div className="fresh-testimonial-copy" key={`copy-${activeTestimonial}`}>
-              <p className="fresh-testimonial-kicker"><span></span> Testimonials</p>
-              <h2>What Our Customers Say</h2>
+              <p className="fresh-testimonial-kicker"><span></span> Reviews</p>
+              <h2>Customer Reviews</h2>
               <div className="fresh-testimonial-quote-mark" aria-hidden="true">“</div>
               <p className="fresh-testimonial-quote">“{testimonial.quote}”</p>
+              <ReviewStars rating={testimonial.rating} />
               <div className="fresh-testimonial-author">
                 <strong>{testimonial.name}</strong>
                 <span>{testimonial.role}</span>
@@ -444,10 +471,11 @@ export default function HomePage() {
                   <img src={slide.image} alt={slide.name} />
                 </div>
                 <div className="fresh-mobile-testimonial-copy">
-                  <p className="fresh-testimonial-kicker"><span></span> Testimonials</p>
-                  <h2>What Our Customers Say</h2>
+                  <p className="fresh-testimonial-kicker"><span></span> Reviews</p>
+                  <h2>Customer Reviews</h2>
                   <div className="fresh-testimonial-quote-mark" aria-hidden="true">“</div>
                   <p className="fresh-testimonial-quote">“{slide.quote}”</p>
+                  <ReviewStars rating={slide.rating} />
                   <div className="fresh-testimonial-author">
                     <strong>{slide.name}</strong>
                     <span>{slide.role}</span>

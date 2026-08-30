@@ -225,7 +225,7 @@ export function BookingForm({ className }) {
       setFeedback(
         data.emailed
           ? "Thanks. Your booking enquiry has been sent. We will contact you to validate details and confirm availability."
-          : "Thanks. Your booking enquiry has been saved. Email is not configured yet, so the team should check the backend enquiry file.",
+          : "Thanks. Your booking enquiry has been saved. We will contact you to validate details and confirm availability.",
       );
       setForm(initialForm);
     } catch {
@@ -332,13 +332,17 @@ export function BookingForm({ className }) {
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-4">
-          <Button className="min-w-48" disabled={status === "loading"} size="lg" type="submit">
+          <Button className="min-w-48" disabled={status === "loading" || status === "success"} size="lg" type="submit">
             {status === "loading" ? (
               <Loader2 className="animate-spin" />
             ) : status === "success" ? (
               <CheckCircle2 />
             ) : null}
-            {status === "loading" ? "Sending Enquiry" : "Send Booking Enquiry"}
+            {status === "success"
+              ? "Sent"
+              : status === "loading"
+                ? "Sending Enquiry"
+                : "Send Booking Enquiry"}
           </Button>
 
           {feedback ? (

@@ -31,8 +31,6 @@ const initialForm = {
   orderNote: "",
 };
 
-const getOrderNumber = () => `ORD-${String(Date.now()).slice(-6)}`;
-
 const formatOrderDate = (date) =>
   new Intl.DateTimeFormat("en-GB", {
     dateStyle: "medium",
@@ -99,6 +97,8 @@ export default function CheckoutPage() {
   );
   const [stripeError, setStripeError] = useState("");
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [whatsappLoading, setWhatsappLoading] = useState(false);
+  const [whatsappSendStatus, setWhatsappSendStatus] = useState(null);
 
   const subtotal = useMemo(
     () => cartItems.reduce((sum, item) => sum + parsePrice(item.price) * item.quantity, 0),
@@ -129,20 +129,67 @@ export default function CheckoutPage() {
     customer: { ...form },
     date: new Date().toISOString(),
     items: cartItems.map((item) => ({ ...item })),
-    orderNumber: getOrderNumber(),
+    orderNumber: "",
     paymentMethod: method,
     total: subtotal,
   });
 
-  const placeOrder = (event) => {
-    event.preventDefault();
+  const placeWhatsappOrder = async () => {
     if (!canSubmitOrder) return;
-    const placedOrder = buildOrderSnapshot("whatsapp");
 
-    setOrder(placedOrder);
-    window.localStorage.setItem(savedOrderKey, JSON.stringify(placedOrder));
-    setReceiptStage("processing");
-    clearCart();
+    const orderSnapshot = buildOrderSnapshot("whatsapp");
+    setStripeError("");
+    setWhatsappLoading(true);
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/whatsapp-orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customer: form,
+          items: cartItems.map(({ name, price, quantity, selectedSize }) => ({
+            name,
+            price,
+            quantity,
+            selectedSize,
+          })),
+          total: subtotal,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.order || !data.whatsappUrl) {
+        throw new Error(data.error ?? "Unable to create WhatsApp order.");
+      }
+
+      const placedOrder = {
+        ...orderSnapshot,
+        ...data.order,
+        customer: { ...form, ...data.order.customer },
+        items: orderSnapshot.items,
+        paymentMethod: "whatsapp",
+      };
+
+      setOrder(placedOrder);
+      setWhatsappSendStatus({
+        sent: Boolean(data.whatsappSent),
+        error: data.whatsappError ?? "",
+      });
+      window.localStorage.setItem(savedOrderKey, JSON.stringify(placedOrder));
+      setReceiptStage("processing");
+      clearCart();
+    } catch (error) {
+      console.error("WhatsApp order could not start:", error);
+      setStripeError(
+        error instanceof TypeError
+          ? "Order via WhatsApp is temporarily unavailable. Please try again."
+          : error.message ?? "Order via WhatsApp is temporarily unavailable. Please try again.",
+      );
+    } finally {
+      setWhatsappLoading(false);
+    }
   };
 
   const submitSelectedPayment = (event) => {
@@ -154,7 +201,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    placeOrder(event);
+    placeWhatsappOrder();
   };
 
   const startStripeCheckout = async () => {
@@ -163,7 +210,6 @@ export default function CheckoutPage() {
     const pendingOrder = buildOrderSnapshot("stripe");
     setStripeError("");
     setStripeLoading(true);
-    window.localStorage.setItem(pendingStripeOrderKey, JSON.stringify(pendingOrder));
 
     try {
       const response = await fetch(`${apiBaseUrl}/api/create-checkout-session`, {
@@ -179,23 +225,34 @@ export default function CheckoutPage() {
             quantity,
             selectedSize,
           })),
+          total: subtotal,
         }),
       });
       const data = await response.json().catch(() => ({}));
 
-      if (!response.ok || !data.url) {
+      if (!response.ok || !data.url || !data.order) {
         console.error("Stripe checkout server error:", data.error);
-        throw new Error("Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout.");
+        throw new Error("Online payment is temporarily unavailable. Please try again or choose Order via WhatsApp.");
       }
 
+      window.localStorage.setItem(
+        pendingStripeOrderKey,
+        JSON.stringify({
+          ...pendingOrder,
+          ...data.order,
+          customer: { ...form, ...data.order.customer },
+          items: pendingOrder.items,
+          paymentMethod: "stripe",
+        }),
+      );
       window.location.assign(data.url);
     } catch (error) {
       window.localStorage.removeItem(pendingStripeOrderKey);
       console.error("Stripe checkout could not start:", error);
       setStripeError(
         error instanceof TypeError
-          ? "Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout."
-          : error.message ?? "Online payment is temporarily unavailable. Please try again or choose WhatsApp Checkout.",
+          ? "Online payment is temporarily unavailable. Please try again or choose Order via WhatsApp."
+          : error.message ?? "Online payment is temporarily unavailable. Please try again or choose Order via WhatsApp.",
       );
       setStripeLoading(false);
     }
@@ -234,16 +291,46 @@ export default function CheckoutPage() {
       return;
     }
 
-    try {
+    const confirmStripeOrder = async () => {
       processedStripeReturnRef.current = true;
-      const paidOrder = { ...order, paymentMethod: "stripe" };
+      const sessionId = searchParams.get("session_id");
+      let paidOrder = { ...order, paymentMethod: "stripe", status: "PAID_ONLINE" };
+
+      if (sessionId) {
+        try {
+          const response = await fetch(`${apiBaseUrl}/api/stripe-orders/confirm`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (response.ok && data.order) {
+            paidOrder = {
+              ...paidOrder,
+              ...data.order,
+              customer: { ...paidOrder.customer, ...data.order.customer },
+              items: paidOrder.items,
+              paymentMethod: "stripe",
+            };
+          } else {
+            console.error("Stripe order confirmation server error:", data.error);
+          }
+        } catch (error) {
+          console.error("Stripe order confirmation could not complete:", error);
+        }
+      }
+
       window.localStorage.setItem(savedOrderKey, JSON.stringify(paidOrder));
       window.localStorage.removeItem(pendingStripeOrderKey);
       window.history.replaceState(null, "", "/checkout");
+      setOrder(paidOrder);
       clearCart();
-    } catch {
-      window.localStorage.removeItem(pendingStripeOrderKey);
-    }
+    };
+
+    confirmStripeOrder();
   }, [clearCart, order, searchParams]);
 
   useEffect(() => {
@@ -270,7 +357,9 @@ export default function CheckoutPage() {
   const orderStatusMessage =
     order?.paymentMethod === "stripe"
       ? "Your payment was successful. We'll contact you to validate your order."
-      : "We'll contact you to validate your order and confirm payment.";
+      : whatsappSendStatus?.sent
+        ? "Order received. Check WhatsApp to validate your order, payment and next steps with our team."
+        : "Order received. Our team will follow up shortly to validate your order and payment.";
   const checkoutNotice = stripeError
     ? {
         title: "Online payment unavailable",
@@ -416,6 +505,9 @@ export default function CheckoutPage() {
                 <button className="checkout-status-download" type="button" onClick={downloadReceipt}>
                   Download Receipt
                 </button>
+                <Link className="checkout-status-menu-link" to="/menu">
+                  Return to Menu
+                </Link>
               </div>
             </div>
           ) : (
@@ -486,8 +578,8 @@ export default function CheckoutPage() {
                 >
                   <span className="checkout-payment-check" aria-hidden="true"></span>
                   <span>
-                    <strong>WhatsApp Checkout</strong>
-                    <small>Place order and pay via WhatsApp</small>
+                    <strong>Order via WhatsApp</strong>
+                    <small>Send your order to our WhatsApp team</small>
                   </span>
                 </button>
                 {whatsappNotice ? (
@@ -553,8 +645,10 @@ export default function CheckoutPage() {
                     <i className="fa fa-arrow-left"></i>
                     Return to Cart
                   </button>
-                  <button disabled={!canSubmitOrder || stripeLoading} type="submit">
-                    {stripeLoading ? <span className="checkout-button-spinner" aria-hidden="true"></span> : null}
+                  <button disabled={!canSubmitOrder || stripeLoading || whatsappLoading} type="submit">
+                    {stripeLoading || whatsappLoading ? (
+                      <span className="checkout-button-spinner" aria-hidden="true"></span>
+                    ) : null}
                     {!paymentMethod ? "Select Payment" : paymentMethod === "stripe" ? "Pay Online" : "Place Order"}
                   </button>
                 </div>

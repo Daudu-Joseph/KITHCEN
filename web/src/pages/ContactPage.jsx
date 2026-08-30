@@ -1,4 +1,52 @@
+import { useState } from "react";
+
+const initialContactForm = {
+  name: "",
+  email: "",
+  phone: "",
+  message: "",
+};
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:4242";
+
 export default function ContactPage() {
+  const [form, setForm] = useState(initialContactForm);
+  const [status, setStatus] = useState("idle");
+  const [feedback, setFeedback] = useState("");
+
+  const updateField = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const submitContactMessage = async (event) => {
+    event.preventDefault();
+    setStatus("loading");
+    setFeedback("");
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/contact-messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to send contact message.");
+      }
+
+      setStatus("success");
+      setFeedback("Thanks. Your message has been sent to Chop Republic.");
+      setForm(initialContactForm);
+    } catch {
+      setStatus("error");
+      setFeedback("We could not send your message right now. Please try again or call us directly.");
+    }
+  };
+
   return (
     <main className="contact-page">
         <section className="page-banner d-flex align-items-center">
@@ -21,33 +69,74 @@ export default function ContactPage() {
               <div className="col-lg-8">
                 <div className="form">
                   <h2 className="mb-5 position-relative display-6 fw-bold" data-aos="fade-right">Get In Touch</h2>
-                  <form action="" data-aos="fade-right">
+                  <form data-aos="fade-right" onSubmit={submitContactMessage}>
                     <div className="input-group">
                       <div className="icon-wrapper d-flex align-items-center position-relative">
                         <i className="fa fa-user py-2 px-3"></i>
                       </div>
-                      <input className="form-control bg-transparent border-0 px-3" type="text" placeholder="Username" />
+                      <input
+                        className="form-control bg-transparent border-0 px-3"
+                        name="name"
+                        onChange={updateField}
+                        placeholder="Name"
+                        required
+                        type="text"
+                        value={form.name}
+                      />
                     </div>
                     <div className="input-group">
                       <div className="icon-wrapper d-flex align-items-center position-relative">
                         <i className="fa fa-envelope py-2 px-3"></i>
                       </div>
-                      <input className="form-control bg-transparent border-0 px-3" type="email" placeholder="Email" />
+                      <input
+                        className="form-control bg-transparent border-0 px-3"
+                        name="email"
+                        onChange={updateField}
+                        placeholder="Email"
+                        required
+                        type="email"
+                        value={form.email}
+                      />
                     </div>
                     <div className="input-group">
                       <div className="icon-wrapper d-flex align-items-center position-relative">
                         <i className="fa fa-phone py-2 px-3"></i>
                       </div>
-                      <input className="form-control bg-transparent border-0 px-3" type="text" placeholder="Phone" />
+                      <input
+                        className="form-control bg-transparent border-0 px-3"
+                        name="phone"
+                        onChange={updateField}
+                        placeholder="Phone"
+                        type="tel"
+                        value={form.phone}
+                      />
                     </div>
                     <div className="input-group">
-                      <textarea className="form-control bg-transparent border-0 px-3" name="" id="" placeholder="Message"></textarea>
+                      <textarea
+                        className="form-control bg-transparent border-0 px-3"
+                        name="message"
+                        onChange={updateField}
+                        placeholder="Message"
+                        required
+                        value={form.message}
+                      ></textarea>
                     </div>
 
                     <div className="book-a-table contact-button">
                       <div className="anim-layer"></div>
-                      <a href="#">Send</a>
+                      <button disabled={status === "loading"} type="submit">
+                        {status === "loading" ? "Sending..." : "Send"}
+                      </button>
                     </div>
+                    {feedback ? (
+                      <p
+                        className={`contact-form-feedback ${
+                          status === "error" ? "is-error" : "is-success"
+                        }`}
+                      >
+                        {feedback}
+                      </p>
+                    ) : null}
                   </form>
                 </div>
               </div>

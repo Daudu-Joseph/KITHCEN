@@ -1889,7 +1889,8 @@ header.scrolled {
   z-index: 40;
 }
 
-.checkout-status-download {
+.checkout-status-download,
+.checkout-status-menu-link {
   background: #ee2228;
   border: 0;
   border-radius: 999px;
@@ -1907,7 +1908,8 @@ header.scrolled {
   background: #111;
 }
 
-.checkout-status-download:hover {
+.checkout-status-download:hover,
+.checkout-status-menu-link:hover {
   color: #fff;
 }
 
@@ -2213,11 +2215,16 @@ header.scrolled {
   right: auto;
 }
 
-.book-a-table:hover a {
+.book-a-table:hover a,
+.book-a-table:hover button {
   color: #141214;
 }
 
-.book-a-table a {
+.book-a-table a,
+.book-a-table button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
   display: block;
   font-size: 1rem;
   font-family: "Nunito", sans-serif;
@@ -2227,7 +2234,13 @@ header.scrolled {
   color: white;
   text-decoration: none;
   position: relative;
+  width: 100%;
   z-index: 1;
+}
+
+.book-a-table button:disabled {
+  cursor: wait;
+  opacity: 0.75;
 }
 
 /* book-a-table button end */
@@ -3039,8 +3052,17 @@ header.scrolled {
   font-size: 17px;
   font-weight: 700;
   line-height: 1.55;
-  margin: 28px 0 26px;
+  margin: 28px 0 16px;
   max-width: 570px;
+}
+
+.fresh-testimonial-stars {
+  align-items: center;
+  color: #ffbf2f;
+  display: flex;
+  font-size: 18px;
+  gap: 6px;
+  margin: 0 0 24px;
 }
 
 .fresh-testimonial-author {
