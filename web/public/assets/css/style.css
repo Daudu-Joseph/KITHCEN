@@ -1718,6 +1718,129 @@ header.scrolled {
   padding: 18px 0 0;
 }
 
+.checkout-whatsapp-status {
+  font-family: "Heebo", sans-serif;
+  padding: 0 0 70px;
+  width: 100%;
+}
+
+.checkout-whatsapp-hero {
+  background: #f8f8f8;
+  margin: 0 auto 34px;
+  max-width: 960px;
+  padding: 34px 22px;
+  text-align: center;
+}
+
+.checkout-whatsapp-hero h1 {
+  color: #000;
+  font-size: 20px;
+  font-weight: 900;
+  margin: 0 0 10px;
+}
+
+.checkout-whatsapp-hero p {
+  color: #607080;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  margin: 0 0 18px;
+}
+
+.checkout-whatsapp-meta {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  margin: 0 0 34px;
+  max-width: 960px;
+  width: 100%;
+}
+
+.checkout-whatsapp-meta div {
+  border-right: 1px solid #d8dce2;
+  padding-right: 24px;
+}
+
+.checkout-whatsapp-meta div:last-child {
+  border-right: 0;
+}
+
+.checkout-whatsapp-meta dt {
+  color: #667085;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.checkout-whatsapp-meta dd {
+  color: #000;
+  font-size: 13px;
+  font-weight: 900;
+  margin: 2px 0 0;
+}
+
+.checkout-whatsapp-note {
+  color: #607080;
+  font-size: 14px;
+  margin: 0 0 18px;
+  max-width: 960px;
+}
+
+.checkout-whatsapp-status h2 {
+  color: #000;
+  font-size: 22px;
+  font-weight: 900;
+  margin: 0 0 16px;
+  max-width: 960px;
+}
+
+.checkout-whatsapp-table {
+  border-collapse: collapse;
+  margin: 0 0 34px;
+  max-width: 960px;
+  width: 100%;
+}
+
+.checkout-whatsapp-table th {
+  background: #f7fafb;
+  color: #607080;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.checkout-whatsapp-table th:last-child,
+.checkout-whatsapp-table td:last-child {
+  text-align: left;
+}
+
+.checkout-whatsapp-table td {
+  border-bottom: 1px solid #dfe3e8;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 15px 16px;
+}
+
+.checkout-whatsapp-table tbody tr:first-child td:first-child {
+  color: #ee2228;
+  text-transform: uppercase;
+}
+
+.checkout-whatsapp-address {
+  border: 1px solid #dfe3e8;
+  color: #607080;
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 960px;
+  padding: 24px;
+}
+
 .receipt-printer-root {
   align-items: center;
   display: flex;
@@ -2168,18 +2291,34 @@ header.scrolled {
 }
 
 .checkout-status-download,
-.checkout-status-menu-link {
+.checkout-status-menu-link,
+.checkout-status-whatsapp-link {
   background: #ee2228;
   border: 0;
   border-radius: 999px;
   color: #fff;
+  display: inline-flex;
   font-family: "Heebo", sans-serif;
   font-size: 15px;
   font-weight: 800;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
   padding: 14px 28px;
   position: relative;
   text-decoration: none;
   z-index: 1;
+}
+
+.checkout-status-whatsapp-link {
+  background: #17bf5f;
+  box-shadow: 0 12px 26px rgba(23, 191, 95, 0.22);
+}
+
+.checkout-status-whatsapp-link:hover {
+  background: #0fa850;
+  color: #fff;
+  transform: translateY(-1px);
 }
 
 .checkout-status-download {
@@ -2196,6 +2335,15 @@ header.scrolled {
     gap: 36px;
     grid-template-columns: 1fr;
   }
+
+  .checkout-whatsapp-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 18px;
+  }
+
+  .checkout-whatsapp-meta div:nth-child(2) {
+    border-right: 0;
+  }
 }
 
 @media (max-width: 575px) {
@@ -2206,6 +2354,25 @@ header.scrolled {
 
   .checkout-fulfillment-options {
     grid-template-columns: 1fr;
+  }
+
+  .checkout-whatsapp-hero {
+    padding: 28px 16px;
+  }
+
+  .checkout-whatsapp-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-whatsapp-meta div {
+    border-bottom: 1px solid #d8dce2;
+    border-right: 0;
+    padding: 0 0 12px;
+  }
+
+  .checkout-whatsapp-table {
+    display: block;
+    overflow-x: auto;
   }
 
   .checkout-modal-actions {

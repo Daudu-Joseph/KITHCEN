@@ -35,9 +35,6 @@ const whatsappPhoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const whatsappVerifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
 const whatsappBusinessNumber = process.env.WHATSAPP_BUSINESS_NUMBER ?? "447990532631";
 const whatsappGraphApiVersion = process.env.WHATSAPP_GRAPH_API_VERSION ?? "v20.0";
-const whatsappOrderTemplateName = process.env.WHATSAPP_ORDER_TEMPLATE_NAME ?? "order_received";
-const whatsappOrderTemplateLanguage = process.env.WHATSAPP_ORDER_TEMPLATE_LANGUAGE ?? "en";
-const defaultCustomerCountryCode = process.env.DEFAULT_CUSTOMER_COUNTRY_CODE ?? "44";
 const bankAccountName = process.env.BANK_ACCOUNT_NAME ?? "Subtle innovative services Ltd";
 const bankAccountNumber = process.env.BANK_ACCOUNT_NUMBER ?? "33220079";
 const bankSortCode = process.env.BANK_SORT_CODE ?? "04-06-05";
@@ -407,20 +404,36 @@ const getCustomerName = (customer) =>
 const getWhatsappOrderMessage = (order) => {
   const itemLines = order.items.map((item) => {
     const size = item.selectedSize ? ` (${item.selectedSize})` : "";
-    return `- ${item.name}${size} x${item.quantity}`;
+    return `${item.quantity}x - *${item.name}${size}*`;
   });
   const customerName = getCustomerName(order.customer);
   const lines = [
-    "Hi Chop Republic, I want to place this order:",
+    "Hello, here's my order details:",
     "",
-    `Order: ${order.orderNumber}`,
-    "Items:",
+    `*Total Products*: ${order.items.reduce((sum, item) => sum + item.quantity, 0)}`,
+    "",
     ...itemLines,
     "",
-    `Total: ${formatPounds(order.total)}`,
-    `Name: ${customerName}`,
-    `Phone: ${order.customer.phone}`,
-    `Address: ${order.customer.address}`,
+    `*Total:*`,
+    `${formatPounds(order.total)}`,
+    "",
+    `*Payment method:*`,
+    "WhatsApp Checkout",
+    "",
+    `*Customer Details*`,
+    customerName,
+    order.customer.address,
+    order.customer.country,
+    "",
+    order.customer.phone,
+    order.customer.email,
+    "",
+    `Order: ${order.orderNumber}`,
+    "",
+    `(${new Intl.DateTimeFormat("en-GB", {
+      dateStyle: "long",
+      timeStyle: "short",
+    }).format(new Date(order.createdAt))})`,
   ];
 
   if (order.customer.orderNote) {
@@ -489,44 +502,6 @@ const getWhatsappBotReply = (order) => {
     "For pickup details or delivery fee, a team member will continue with you here.",
   ].join("\n");
 };
-
-const normaliseWhatsappRecipient = (phone) => {
-  const trimmed = String(phone ?? "").trim();
-  if (trimmed.startsWith("+")) {
-    return trimmed.replace(/[^\d]/g, "");
-  }
-
-  const digits = trimmed.replace(/[^\d]/g, "");
-  if (digits.startsWith("00")) {
-    return digits.slice(2);
-  }
-
-  if (digits.startsWith("0") && defaultCustomerCountryCode) {
-    return `${defaultCustomerCountryCode}${digits.slice(1)}`;
-  }
-
-  return digits;
-};
-
-const getWhatsappOrderTemplateComponents = (order) => [
-  {
-    type: "body",
-    parameters: [
-      {
-        type: "text",
-        text: getCustomerName(order.customer),
-      },
-      {
-        type: "text",
-        text: order.orderNumber,
-      },
-      {
-        type: "text",
-        text: formatPounds(order.total),
-      },
-    ],
-  },
-];
 
 const getOrderEmailHtml = (order) =>
   emailShell({
@@ -939,6 +914,9 @@ const sendWhatsappText = async (to, body) => {
     return false;
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
   const apiResponse = await fetch(
     `https://graph.facebook.com/${whatsappGraphApiVersion}/${whatsappPhoneNumberId}/messages`,
     {
@@ -947,6 +925,7 @@ const sendWhatsappText = async (to, body) => {
         Authorization: `Bearer ${whatsappAccessToken}`,
         "Content-Type": "application/json",
       },
+      signal: controller.signal,
       body: JSON.stringify({
         messaging_product: "whatsapp",
         to,
@@ -957,48 +936,11 @@ const sendWhatsappText = async (to, body) => {
         },
       }),
     },
-  );
+  ).finally(() => clearTimeout(timeout));
 
   if (!apiResponse.ok) {
     const errorBody = await apiResponse.text();
     throw new Error(`WhatsApp send failed: ${apiResponse.status} ${errorBody}`);
-  }
-
-  return true;
-};
-
-const sendWhatsappTemplate = async (to, templateName, languageCode, components) => {
-  if (!whatsappAccessToken || !whatsappPhoneNumberId) {
-    console.warn("Skipped WhatsApp template because credentials are missing.");
-    return false;
-  }
-
-  const apiResponse = await fetch(
-    `https://graph.facebook.com/${whatsappGraphApiVersion}/${whatsappPhoneNumberId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${whatsappAccessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to,
-        type: "template",
-        template: {
-          name: templateName,
-          language: {
-            code: languageCode,
-          },
-          components,
-        },
-      }),
-    },
-  );
-
-  if (!apiResponse.ok) {
-    const errorBody = await apiResponse.text();
-    throw new Error(`WhatsApp template failed: ${apiResponse.status} ${errorBody}`);
   }
 
   return true;
@@ -1216,52 +1158,38 @@ app.post("/api/whatsapp-orders", express.json(), async (request, response) => {
     await saveJsonRecord(whatsappOrdersPath, order);
     let whatsappSent = false;
     let whatsappError = null;
-    const recipient = normaliseWhatsappRecipient(customer.phone);
+    console.info("WhatsApp checkout created. Customer must tap Send Order Details:", {
+      orderNumber: order.orderNumber,
+      to: whatsappBusinessNumber,
+    });
 
-    try {
-      whatsappSent = await sendWhatsappTemplate(
-        recipient,
-        whatsappOrderTemplateName,
-        whatsappOrderTemplateLanguage,
-        getWhatsappOrderTemplateComponents(order),
-      );
-      order.status = "WHATSAPP_TEMPLATE_SENT";
-      order.updatedAt = new Date().toISOString();
-
-      const orders = await readJsonArray(whatsappOrdersPath);
-      const nextOrders = orders.map((savedOrder) =>
-        savedOrder.orderNumber === order.orderNumber ? order : savedOrder,
-      );
-      await writeJsonArray(whatsappOrdersPath, nextOrders);
-
-      await appendWhatsappConversation({
-        from: whatsappPhoneNumberId ?? "chop-republic",
-        to: recipient,
-        matchedOrderNumber: order.orderNumber,
-        outgoingText: `Template: ${whatsappOrderTemplateName}`,
-        source: "checkout-template-send",
-      });
-    } catch (error) {
-      whatsappError = error.message;
-      console.error("Initial WhatsApp customer template failed:", error);
-    }
-
-    const notifications = await notifyOrder({
+    const notificationOrder = {
       ...order,
       customerReply,
       whatsappSent,
       whatsappError,
-    });
-    order.notifiedAt = new Date().toISOString();
+    };
+
+    void notifyOrder(notificationOrder)
+      .then((notifications) => {
+        console.info("WhatsApp checkout notifications processed:", {
+          orderNumber: order.orderNumber,
+          ...notifications,
+        });
+      })
+      .catch((error) => {
+        console.error("WhatsApp checkout notifications failed:", error);
+      });
 
     response.json({
       ok: true,
       order,
       message,
       customerReply,
-      emailed: notifications.emailed,
-      customerEmailed: notifications.customerEmailed,
-      sheeted: notifications.sheeted,
+      emailed: false,
+      customerEmailed: false,
+      sheeted: false,
+      notificationsQueued: true,
       whatsappSent,
       whatsappError,
       whatsappUrl,
@@ -1290,6 +1218,7 @@ app.post("/api/whatsapp/webhook", express.json(), async (request, response) => {
 
   try {
     const entries = Array.isArray(request.body?.entry) ? request.body.entry : [];
+    console.info("WhatsApp webhook received:", { entries: entries.length });
 
     for (const entry of entries) {
       const changes = Array.isArray(entry?.changes) ? entry.changes : [];
@@ -1302,6 +1231,10 @@ app.post("/api/whatsapp/webhook", express.json(), async (request, response) => {
           const text = sanitizeText(message.text?.body, 3000);
 
           if (!from || !text) continue;
+          console.info("WhatsApp message received:", {
+            from,
+            preview: text.slice(0, 90),
+          });
 
           const order = await findWhatsappOrderByText(text);
           let reply =

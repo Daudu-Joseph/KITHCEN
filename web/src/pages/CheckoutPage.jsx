@@ -100,7 +100,9 @@ export default function CheckoutPage() {
   const [stripeError, setStripeError] = useState("");
   const [stripeLoading, setStripeLoading] = useState(false);
   const [whatsappLoading, setWhatsappLoading] = useState(false);
-  const [whatsappSendStatus, setWhatsappSendStatus] = useState(null);
+  const [whatsappCheckoutUrl, setWhatsappCheckoutUrl] = useState(
+    () => initialReceipt.order?.whatsappUrl ?? "",
+  );
   const [onlineFulfillmentModalOpen, setOnlineFulfillmentModalOpen] = useState(false);
   const [onlineFulfillmentMethod, setOnlineFulfillmentMethod] = useState("pickup");
   const [onlineDeliveryAddress, setOnlineDeliveryAddress] = useState("");
@@ -188,13 +190,11 @@ export default function CheckoutPage() {
         customer: { ...form, ...data.order.customer },
         items: orderSnapshot.items,
         paymentMethod: "whatsapp",
+        whatsappUrl: data.whatsappUrl,
       };
 
       setOrder(placedOrder);
-      setWhatsappSendStatus({
-        sent: Boolean(data.whatsappSent),
-        error: data.whatsappError ?? "",
-      });
+      setWhatsappCheckoutUrl(data.whatsappUrl);
       window.localStorage.setItem(savedOrderKey, JSON.stringify(placedOrder));
       setReceiptStage("processing");
       clearCart();
@@ -381,13 +381,16 @@ export default function CheckoutPage() {
   const receiptScreenSubtitle = `${orderItemCount} ${orderItemCount === 1 ? "item" : "items"} ${
     order?.paymentMethod === "stripe" ? "payment confirmed" : "ready for payment"
   }`;
-  const orderStatusTitle = order?.paymentMethod === "stripe" ? "Payment confirmed" : "Order placed";
+  const orderStatusTitle = order?.paymentMethod === "stripe" ? "Payment confirmed" : "Almost done";
   const orderStatusMessage =
     order?.paymentMethod === "stripe"
       ? "Your payment was successful. We'll contact you to validate your order."
-      : whatsappSendStatus?.sent
-        ? "Order received. Check WhatsApp to validate your order, payment and next steps with our team."
-        : "Order received. Our team will follow up shortly to validate your order and payment.";
+      : "Kindly send your order details on WhatsApp so our team can validate payment, pickup or delivery, allergies and next steps.";
+  const orderDateOnly = order
+    ? new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "medium",
+      }).format(new Date(order.date))
+    : "";
   const checkoutNotice = stripeError
     ? {
         title: "Online payment unavailable",
@@ -520,137 +523,224 @@ export default function CheckoutPage() {
         <div className="container">
           {order ? (
             <div className="checkout-status">
-              <ReceiptPrinter.Root stage={receiptStage}>
-                <ReceiptPrinter.Machine>
-                  <ReceiptPrinter.Header>
-                    <div className="receipt-brand-mark" aria-hidden="true">
-                      CR
+              {order.paymentMethod === "whatsapp" ? (
+                <div className="checkout-whatsapp-status">
+                  <div className="checkout-whatsapp-hero">
+                    <h1>Thanks and You're Awesome, {order.customer.firstName || "there"}!</h1>
+                    <p>Kindly send your order details by clicking below button.</p>
+                    {whatsappCheckoutUrl ? (
+                      <a
+                        className="checkout-status-whatsapp-link"
+                        href={whatsappCheckoutUrl}
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        <i className="fab fa-whatsapp" aria-hidden="true"></i>
+                        Send Order Details
+                      </a>
+                    ) : null}
+                  </div>
+
+                  <dl className="checkout-whatsapp-meta">
+                    <div>
+                      <dt>Order Number:</dt>
+                      <dd>{order.orderNumber}</dd>
                     </div>
-                    <TactileButton depth="shallow" href="/" size="sm">
-                      <HouseIcon aria-hidden="true" size={13} weight="fill" />
-                      Home
-                    </TactileButton>
-                  </ReceiptPrinter.Header>
-
-                  <ReceiptPrinter.Screen>
-                    <div className="receipt-screen-content">
-                      <div className="receipt-screen-row">
-                        <div>
-                          <p>{receiptScreenTitle}</p>
-                          <p>{receiptScreenSubtitle}</p>
-                        </div>
-                        <strong>
-                          <span>Total</span>
-                          {formatPrice(order.total)}
-                        </strong>
-                      </div>
-                      <ReceiptPrinter.Status />
+                    <div>
+                      <dt>Date:</dt>
+                      <dd>{orderDateOnly}</dd>
                     </div>
-                  </ReceiptPrinter.Screen>
-                </ReceiptPrinter.Machine>
+                    <div>
+                      <dt>Total:</dt>
+                      <dd>{formatPrice(order.total)}</dd>
+                    </div>
+                    <div>
+                      <dt>Payment Method:</dt>
+                      <dd>WhatsApp Checkout</dd>
+                    </div>
+                  </dl>
 
-                <ReceiptPrinter.Output>
-                  <ReceiptPrinter.Paper>
-                    <div className="printed-receipt-logo">CR</div>
-                    <div className="printed-receipt-rule"></div>
-                    <h2>Order receipt</h2>
+                  <p className="checkout-whatsapp-note">Place order and pay via WhatsApp</p>
 
-                    <div className="printed-receipt-items">
+                  <h2>Order details</h2>
+                  <table className="checkout-whatsapp-table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
                       {order.items.map((item) => {
                         const itemPrice = parsePrice(item.price);
-
                         return (
-                          <div className="printed-receipt-item" key={item.cartKey ?? item.slug}>
-                            <div>
-                              <strong>{item.name}</strong>
-                              {item.selectedSize ? <em>{item.selectedSize}</em> : null}
-                              <span>
-                                Qty {item.quantity} x {formatPrice(itemPrice)}
-                              </span>
-                            </div>
-                            <b>{formatPrice(itemPrice * item.quantity)}</b>
-                          </div>
+                          <tr key={item.cartKey ?? item.slug}>
+                            <td>
+                              {item.name} {item.selectedSize ? `(${item.selectedSize}) ` : ""}x {item.quantity}
+                            </td>
+                            <td>{formatPrice(itemPrice * item.quantity)}</td>
+                          </tr>
                         );
                       })}
-                    </div>
+                      <tr>
+                        <td>Subtotal:</td>
+                        <td>{formatPrice(order.total)}</td>
+                      </tr>
+                      <tr>
+                        <td>Total:</td>
+                        <td>{formatPrice(order.total)}</td>
+                      </tr>
+                      <tr>
+                        <td>Payment method:</td>
+                        <td>WhatsApp Checkout</td>
+                      </tr>
+                    </tbody>
+                  </table>
 
-                    <div className="printed-receipt-rule"></div>
-                    <dl className="printed-receipt-total">
-                      {order.customer.deliveryFee ? (
-                        <div>
-                          <dt>Delivery</dt>
-                          <dd>{formatPrice(order.customer.deliveryFee)}</dd>
+                  <h2>Billing address</h2>
+                  <address className="checkout-whatsapp-address">
+                    <span>{orderCustomerName}</span>
+                    <span>{order.customer.address}</span>
+                    <span>{order.customer.country}</span>
+                    <span>{order.customer.phone}</span>
+                    <span>{order.customer.email}</span>
+                  </address>
+                </div>
+              ) : (
+                <>
+                  <ReceiptPrinter.Root stage={receiptStage}>
+                    <ReceiptPrinter.Machine>
+                      <ReceiptPrinter.Header>
+                        <div className="receipt-brand-mark" aria-hidden="true">
+                          CR
                         </div>
-                      ) : null}
-                      <div>
-                        <dt>Total</dt>
-                        <dd>{formatPrice(order.total)}</dd>
-                      </div>
-                    </dl>
-                    <div className="printed-receipt-rule"></div>
-                    <dl className="printed-receipt-meta">
-                      <div>
-                        <dt>Order</dt>
-                        <dd>{order.orderNumber}</dd>
-                      </div>
-                      <div>
-                        <dt>Name</dt>
-                        <dd>{orderCustomerName}</dd>
-                      </div>
-                      <div>
-                        <dt>Phone</dt>
-                        <dd>{order.customer.phone}</dd>
-                      </div>
-                      <div>
-                        <dt>Email</dt>
-                        <dd>{order.customer.email}</dd>
-                      </div>
-                      <div>
-                        <dt>Address</dt>
-                        <dd>{order.customer.address}</dd>
-                      </div>
-                      {order.customer.fulfillmentMethod ? (
-                        <div>
-                          <dt>Fulfilment</dt>
-                          <dd>{order.customer.fulfillmentMethod}</dd>
-                        </div>
-                      ) : null}
-                      {order.customer.deliveryAddress ? (
-                        <div>
-                          <dt>Delivery</dt>
-                          <dd>{order.customer.deliveryAddress}</dd>
-                        </div>
-                      ) : null}
-                      {order.customer.orderNote.trim() ? (
-                        <div>
-                          <dt>Note</dt>
-                          <dd>{order.customer.orderNote}</dd>
-                        </div>
-                      ) : null}
-                      <div>
-                        <dt>Date</dt>
-                        <dd>{formatOrderDate(order.date)}</dd>
-                      </div>
-                    </dl>
-                    <div className="printed-receipt-barcode" aria-hidden="true"></div>
-                    <p className="printed-receipt-code">{order.orderNumber.replace("-", " ")}</p>
-                  </ReceiptPrinter.Paper>
-                </ReceiptPrinter.Output>
-              </ReceiptPrinter.Root>
+                        <TactileButton depth="shallow" href="/" size="sm">
+                          <HouseIcon aria-hidden="true" size={13} weight="fill" />
+                          Home
+                        </TactileButton>
+                      </ReceiptPrinter.Header>
 
-              <div className="checkout-status-message">
-                <h1>{orderStatusTitle}</h1>
-                <p>{orderStatusMessage}</p>
-              </div>
+                      <ReceiptPrinter.Screen>
+                        <div className="receipt-screen-content">
+                          <div className="receipt-screen-row">
+                            <div>
+                              <p>{receiptScreenTitle}</p>
+                              <p>{receiptScreenSubtitle}</p>
+                            </div>
+                            <strong>
+                              <span>Total</span>
+                              {formatPrice(order.total)}
+                            </strong>
+                          </div>
+                          <ReceiptPrinter.Status />
+                        </div>
+                      </ReceiptPrinter.Screen>
+                    </ReceiptPrinter.Machine>
 
-              <div className="checkout-status-actions">
-                <button className="checkout-status-download" type="button" onClick={downloadReceipt}>
-                  Download Receipt
-                </button>
-                <Link className="checkout-status-menu-link" to="/menu">
-                  Return to Menu
-                </Link>
-              </div>
+                    <ReceiptPrinter.Output>
+                      <ReceiptPrinter.Paper>
+                        <div className="printed-receipt-logo">CR</div>
+                        <div className="printed-receipt-rule"></div>
+                        <h2>Order receipt</h2>
+
+                        <div className="printed-receipt-items">
+                          {order.items.map((item) => {
+                            const itemPrice = parsePrice(item.price);
+
+                            return (
+                              <div className="printed-receipt-item" key={item.cartKey ?? item.slug}>
+                                <div>
+                                  <strong>{item.name}</strong>
+                                  {item.selectedSize ? <em>{item.selectedSize}</em> : null}
+                                  <span>
+                                    Qty {item.quantity} x {formatPrice(itemPrice)}
+                                  </span>
+                                </div>
+                                <b>{formatPrice(itemPrice * item.quantity)}</b>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="printed-receipt-rule"></div>
+                        <dl className="printed-receipt-total">
+                          {order.customer.deliveryFee ? (
+                            <div>
+                              <dt>Delivery</dt>
+                              <dd>{formatPrice(order.customer.deliveryFee)}</dd>
+                            </div>
+                          ) : null}
+                          <div>
+                            <dt>Total</dt>
+                            <dd>{formatPrice(order.total)}</dd>
+                          </div>
+                        </dl>
+                        <div className="printed-receipt-rule"></div>
+                        <dl className="printed-receipt-meta">
+                          <div>
+                            <dt>Order</dt>
+                            <dd>{order.orderNumber}</dd>
+                          </div>
+                          <div>
+                            <dt>Name</dt>
+                            <dd>{orderCustomerName}</dd>
+                          </div>
+                          <div>
+                            <dt>Phone</dt>
+                            <dd>{order.customer.phone}</dd>
+                          </div>
+                          <div>
+                            <dt>Email</dt>
+                            <dd>{order.customer.email}</dd>
+                          </div>
+                          <div>
+                            <dt>Address</dt>
+                            <dd>{order.customer.address}</dd>
+                          </div>
+                          {order.customer.fulfillmentMethod ? (
+                            <div>
+                              <dt>Fulfilment</dt>
+                              <dd>{order.customer.fulfillmentMethod}</dd>
+                            </div>
+                          ) : null}
+                          {order.customer.deliveryAddress ? (
+                            <div>
+                              <dt>Delivery</dt>
+                              <dd>{order.customer.deliveryAddress}</dd>
+                            </div>
+                          ) : null}
+                          {order.customer.orderNote?.trim() ? (
+                            <div>
+                              <dt>Note</dt>
+                              <dd>{order.customer.orderNote}</dd>
+                            </div>
+                          ) : null}
+                          <div>
+                            <dt>Date</dt>
+                            <dd>{formatOrderDate(order.date)}</dd>
+                          </div>
+                        </dl>
+                        <div className="printed-receipt-barcode" aria-hidden="true"></div>
+                        <p className="printed-receipt-code">{order.orderNumber.replace("-", " ")}</p>
+                      </ReceiptPrinter.Paper>
+                    </ReceiptPrinter.Output>
+                  </ReceiptPrinter.Root>
+
+                  <div className="checkout-status-message">
+                    <h1>{orderStatusTitle}</h1>
+                    <p>{orderStatusMessage}</p>
+                  </div>
+
+                  <div className="checkout-status-actions">
+                    <button className="checkout-status-download" type="button" onClick={downloadReceipt}>
+                      Download Receipt
+                    </button>
+                    <Link className="checkout-status-menu-link" to="/menu">
+                      Return to Menu
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <form className="checkout-layout" onSubmit={submitSelectedPayment}>
